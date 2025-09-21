@@ -30,7 +30,7 @@ class Event(Base):
     content_hash = Column(String(64))
 
     # Metadata
-    metadata = Column(JSON)
+    meta_data = Column(JSON)
     confidence = Column(Float, default=1.0)
     processing_status = Column(String(20), default='pending')
 
@@ -75,7 +75,7 @@ class Artifact(Base):
     encryption_key_id = Column(String(36))
 
     # Metadata
-    metadata = Column(JSON)
+    meta_data = Column(JSON)
     extracted_text = Column(Text)
 
     # Timestamps
@@ -217,6 +217,9 @@ class DatabaseManager:
 
         self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
 
+        # Create tables automatically
+        self.create_tables()
+
     def create_tables(self):
         """Create all tables in the database."""
         Base.metadata.create_all(bind=self.engine)
@@ -249,7 +252,7 @@ class DatabaseManager:
                 source=event_data.get('source'),
                 content_encrypted=event_data.get('content_encrypted'),
                 content_hash=event_data.get('content_hash'),
-                metadata=event_data.get('metadata', {}),
+                meta_data=event_data.get('metadata', {}),
                 consent_level=event_data.get('consent_level', 'full')
             )
             session.add(event)
@@ -302,7 +305,7 @@ class DatabaseManager:
                     'timestamp': event.timestamp.isoformat(),
                     'type': event.event_type,
                     'source': event.source,
-                    'metadata': event.metadata,
+                    'metadata': event.meta_data,
                     'created_at': event.created_at.isoformat()
                 })
 

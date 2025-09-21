@@ -2,12 +2,13 @@
 Parsers for different data sources in Consciousness Capture component.
 """
 
-import email
 import json
 import hashlib
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, List, Optional
+import email
+from email.message import Message
 from email.utils import parsedate_to_datetime
 import mimetypes
 
@@ -58,7 +59,7 @@ class EmailParser:
 
         return messages
 
-    def _extract_message_data(self, msg: email.message.Message) -> Dict[str, Any]:
+    def _extract_message_data(self, msg: Message) -> Dict[str, Any]:
         """
         Extract data from an email message object.
 
