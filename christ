@@ -1,0 +1,26 @@
+#!/bin/bash
+# C.H.R.I.S.T. Terminal Launcher
+
+# Colors
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+# Check if venv exists
+if [ -d "venv" ]; then
+    source venv/bin/activate
+elif [ -d "../venv" ]; then
+    source ../venv/bin/activate
+else
+    echo "Virtual environment not found. Run ./setup.sh first."
+    exit 1
+fi
+
+# Check if Ollama is running (optional)
+if ! curl -s http://localhost:11434/api/tags > /dev/null 2>&1; then
+    echo "⚠️  Ollama not running. AI features will be limited."
+    echo "   Start with: ollama serve"
+    echo ""
+fi
+
+# Launch the terminal
+python christ_terminal.py "$@"
