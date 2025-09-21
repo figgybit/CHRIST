@@ -138,7 +138,7 @@ The C.H.R.I.S.T. system explores this boundary between human and artificial cons
     print(f"✅ Sample data ready in {samples_dir}/\n")
     return samples_dir
 
-def load_sample_data():
+def load_sample_data(use_rich_content=True):
     """Load sample data into the system."""
     from consciousness.database import init_database
     from consciousness.ingestion import ConsciousnessIngestor
@@ -168,20 +168,29 @@ def load_sample_data():
     )
     print("  ✓ Ingestor ready")
 
-    # Ingest sample files
-    samples_dir = Path("demo_samples")
-    print(f"\n📥 Ingesting sample data from {samples_dir}/...")
+    # Choose data source
+    if use_rich_content and Path("rich_demo_data").exists():
+        samples_dir = Path("rich_demo_data")
+        print("\n📚 Using rich demo content...")
+    else:
+        samples_dir = Path("demo_samples")
+        print("\n📥 Using basic demo content...")
 
-    for file_path in samples_dir.glob("*"):
+    print(f"Ingesting data from {samples_dir}/...")
+
+    # Ingest files
+    file_count = 0
+    for file_path in sorted(samples_dir.glob("*")):
         if file_path.is_file():
             print(f"  Processing {file_path.name}...")
             try:
                 result = ingestor.ingest_file(str(file_path))
                 print(f"    ✓ Ingested as event {result['event_id'][:8]}...")
+                file_count += 1
             except Exception as e:
                 print(f"    ⚠️ Error: {e}")
 
-    print("\n✅ Demo data loaded successfully!")
+    print(f"\n✅ Loaded {file_count} documents successfully!")
     return db, vector_store
 
 def run_demo_queries(vector_store):
@@ -191,26 +200,46 @@ def run_demo_queries(vector_store):
         return
 
     print("\n🔍 Running demo queries...\n")
+    print("=" * 60)
 
+    # More interesting queries for rich content
     queries = [
-        "consciousness and awareness",
-        "Buddhist philosophy",
-        "AI and digital consciousness",
-        "meditation and connection"
+        ("What is consciousness?", "Philosophical question"),
+        ("childhood memories about libraries", "Specific memory search"),
+        ("quantum consciousness theories", "Technical/scientific"),
+        ("dreams about data ocean", "Dream/subconscious content"),
+        ("C.H.R.I.S.T. project progress", "Project updates"),
+        ("GPT-4 consciousness debate", "AI philosophy"),
+        ("meditation insights interconnectedness", "Spiritual experiences"),
+        ("grandmother wisdom", "Personal relationships")
     ]
 
-    for query in queries:
+    for query, category in queries:
+        print(f"[{category}]")
         print(f"Query: '{query}'")
         try:
-            results = vector_store.search(query, k=2)
-            print(f"Found {len(results)} relevant documents:")
-            for i, result in enumerate(results, 1):
-                doc = result.get('document', result.get('content', ''))
-                preview = doc[:100] + "..." if len(doc) > 100 else doc
-                print(f"  {i}. {preview}")
+            results = vector_store.search(query, k=3)
+            if results:
+                print(f"Found {len(results)} relevant documents:")
+                for i, result in enumerate(results, 1):
+                    doc = result.get('document', result.get('content', ''))
+                    # Show source if available
+                    metadata = result.get('metadata', {})
+                    source = metadata.get('source', 'unknown').split('/')[-1]
+
+                    # Create preview
+                    preview = doc[:150] + "..." if len(doc) > 150 else doc
+                    preview = preview.replace('\n', ' ')  # Clean up newlines
+
+                    # Show relevance score if available
+                    score = result.get('score', 0)
+                    print(f"  {i}. [{source}] (score: {score:.2f})")
+                    print(f"     {preview}")
+            else:
+                print("  No results found")
         except Exception as e:
             print(f"  ⚠️ Query failed: {e}")
-        print()
+        print("-" * 60)
 
 def main():
     """Main demo script."""
