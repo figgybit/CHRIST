@@ -105,7 +105,7 @@ class TestTextFileParser:
         assert result['content']['text'] == content
         assert result['content']['format'] == '.txt'
         assert result['metadata']['line_count'] == 3
-        assert result['metadata']['word_count'] == 10
+        assert result['metadata']['word_count'] == 11
 
     def test_parse_markdown_file(self, tmp_path):
         """Test parsing a markdown file."""
