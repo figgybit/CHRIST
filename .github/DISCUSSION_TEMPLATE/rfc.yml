@@ -1,0 +1,161 @@
+title: "[RFC] "
+labels: ["rfc", "proposal", "architecture"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Request for Comments (RFC)
+        Use this template to propose significant technical changes or new features that require community discussion.
+
+  - type: input
+    id: rfc_number
+    attributes:
+      label: RFC Number
+      description: Leave blank if not assigned
+      placeholder: "RFC-0001"
+
+  - type: input
+    id: authors
+    attributes:
+      label: Authors
+      description: GitHub usernames of RFC authors
+      placeholder: "@username1, @username2"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: status
+    attributes:
+      label: Status
+      options:
+        - Draft
+        - Under Discussion
+        - Ready for Review
+        - Accepted
+        - Implemented
+        - Rejected
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: One paragraph summary of the proposal
+      placeholder: "This RFC proposes..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why is this change necessary?
+      placeholder: |
+        The current system has the following limitations:
+        - Limitation 1
+        - Limitation 2
+
+        This RFC addresses these by...
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical_design
+    attributes:
+      label: Technical Design
+      description: Detailed technical specification
+      placeholder: |
+        ## Overview
+        High-level description...
+
+        ## Architecture
+        System architecture changes...
+
+        ## Implementation Details
+        Specific implementation approach...
+
+        ## API Changes
+        Any API modifications...
+
+        ## Data Model Changes
+        Database or schema changes...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: What other approaches were considered?
+      placeholder: |
+        ### Alternative 1
+        Description and why it was not chosen...
+
+        ### Alternative 2
+        Description and why it was not chosen...
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact Analysis
+      description: How does this affect the system?
+      placeholder: |
+        ## Performance Impact
+        - Expected changes to performance...
+
+        ## Security Impact
+        - Security considerations...
+
+        ## Privacy Impact
+        - Privacy implications...
+
+        ## Breaking Changes
+        - List any breaking changes...
+
+  - type: textarea
+    id: migration
+    attributes:
+      label: Migration Strategy
+      description: How do we migrate existing systems?
+      placeholder: "For existing users, we will..."
+
+  - type: textarea
+    id: testing
+    attributes:
+      label: Testing Strategy
+      description: How will this be tested?
+      placeholder: |
+        - Unit tests for...
+        - Integration tests for...
+        - Performance benchmarks...
+
+  - type: textarea
+    id: timeline
+    attributes:
+      label: Implementation Timeline
+      description: Estimated timeline for implementation
+      placeholder: |
+        - Week 1-2: Prototype
+        - Week 3-4: Implementation
+        - Week 5: Testing
+        - Week 6: Documentation
+
+  - type: textarea
+    id: open_questions
+    attributes:
+      label: Open Questions
+      description: Questions that need community input
+      placeholder: |
+        1. Should we support X feature?
+        2. What's the preferred approach for Y?
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Related RFCs, issues, or external resources
+      placeholder: |
+        - Related to #123
+        - Builds on RFC-0001
+        - https://example.com/relevant-paper

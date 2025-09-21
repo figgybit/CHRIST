@@ -1,0 +1,90 @@
+title: "❓ [QUESTION] "
+labels: ["question", "help-wanted"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Ask the Community
+        Have a question about the C.H.R.I.S.T. project? The community is here to help!
+
+  - type: dropdown
+    id: question_type
+    attributes:
+      label: Question Type
+      description: What kind of question is this?
+      options:
+        - Technical Implementation
+        - Architecture/Design
+        - How to Contribute
+        - Conceptual/Philosophy
+        - Privacy/Security
+        - Usage/Features
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: Ask your question in detail
+      placeholder: "I'm trying to understand..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Provide any relevant context or background
+      placeholder: "I'm working on... and need to know..."
+
+  - type: textarea
+    id: tried
+    attributes:
+      label: What I've Tried
+      description: What have you already attempted or researched?
+      placeholder: |
+        - Checked the documentation
+        - Searched existing discussions
+        - Tried this approach...
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Related Component
+      description: Which component(s) is your question about?
+      multiple: true
+      options:
+        - C - Consciousness Capture
+        - H - Holistic Self-Model
+        - R - Retrieval & Reflection
+        - I - Intent & Integrity
+        - S - Simulation Engine
+        - T - Teleology & Transformation
+        - General Architecture
+        - Development Setup
+        - API Usage
+
+  - type: dropdown
+    id: urgency
+    attributes:
+      label: Urgency
+      description: How urgent is this question for you?
+      options:
+        - Blocking my work
+        - Important but not blocking
+        - General curiosity
+    validations:
+      required: true
+
+  - type: textarea
+    id: code_example
+    attributes:
+      label: Code Example (if applicable)
+      description: Share any relevant code snippets
+      render: python
+      placeholder: |
+        ```python
+        # Your code here
+        ```

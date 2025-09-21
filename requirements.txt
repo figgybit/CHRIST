@@ -1,0 +1,54 @@
+# Core dependencies
+fastapi==0.109.0
+uvicorn[standard]==0.25.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+python-dotenv==1.0.0
+
+# Database
+sqlalchemy==2.0.25
+alembic==1.13.1
+asyncpg==0.29.0
+
+# Security & Cryptography
+cryptography==41.0.7
+pycryptodome==3.19.0
+argon2-cffi==23.1.0
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# Data Processing
+pandas==2.1.4
+numpy==1.26.2
+python-dateutil==2.8.2
+
+# AI/ML (Optional - move to requirements-ml.txt for lighter installs)
+# openai==1.6.1
+# anthropic==0.8.1
+# langchain==0.1.0
+# chromadb==0.4.22
+
+# Email Processing
+python-magic==0.4.27
+email-validator==2.1.0
+
+# Task Queue
+celery==5.3.4
+redis==5.0.1
+
+# Monitoring & Logging
+structlog==24.1.0
+python-json-logger==2.0.7
+
+# Testing (move to requirements-dev.txt)
+# pytest==7.4.4
+# pytest-asyncio==0.21.1
+# pytest-cov==4.1.0
+
+# API Documentation
+# Already included with FastAPI
+
+# Utilities
+click==8.1.7
+rich==13.7.0
+httpx==0.25.2

@@ -1,0 +1,84 @@
+title: "💡 [IDEA] "
+labels: ["idea", "discussion"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Share Your Idea
+        We love hearing new ideas! Please share your thoughts on how to improve the C.H.R.I.S.T. project.
+
+  - type: textarea
+    id: idea_description
+    attributes:
+      label: Idea Description
+      description: Describe your idea in detail
+      placeholder: "I think we should..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Related Component
+      description: Which component(s) does this idea relate to?
+      multiple: true
+      options:
+        - C - Consciousness Capture
+        - H - Holistic Self-Model
+        - R - Retrieval & Reflection
+        - I - Intent & Integrity
+        - S - Simulation Engine
+        - T - Teleology & Transformation
+        - General/Cross-Component
+        - Documentation
+        - Community
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Being Solved
+      description: What problem does this idea address?
+      placeholder: "Currently, users struggle with..."
+
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: Proposed Solution
+      description: How would you implement this idea?
+      placeholder: "We could solve this by..."
+
+  - type: textarea
+    id: benefits
+    attributes:
+      label: Benefits
+      description: What are the benefits of implementing this idea?
+      placeholder: |
+        - Improved user experience
+        - Better performance
+        - Enhanced privacy
+
+  - type: textarea
+    id: challenges
+    attributes:
+      label: Potential Challenges
+      description: What challenges might we face?
+      placeholder: "Some challenges could include..."
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution Interest
+      description: How would you like to contribute to this idea?
+      options:
+        - label: I can help implement this
+        - label: I can help design this
+        - label: I can help test this
+        - label: I can help document this
+        - label: I can provide feedback only
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Any relevant links, papers, or examples?
+      placeholder: "- https://example.com/similar-project"
