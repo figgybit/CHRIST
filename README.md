@@ -21,7 +21,7 @@ This project belongs to everyone. It is designed to grow and adapt, even into ne
 
 ## Get Involved
 
-- Read the full [treatise](docs/christ_project_treatise.md).  
+- Read the full [treatise](treatise.md).  
 - Contribute ideas, translations, code, or reflections.  
 - Join the global effort to make **religion a source of peace** and **technology a servant of love**.
 
