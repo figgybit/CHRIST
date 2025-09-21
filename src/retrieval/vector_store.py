@@ -8,6 +8,10 @@ from typing import List, Dict, Any, Optional, Tuple
 from datetime import datetime
 import numpy as np
 
+# Disable ChromaDB telemetry before importing
+os.environ["ANONYMIZED_TELEMETRY"] = "False"
+os.environ["CHROMA_TELEMETRY_DISABLED"] = "True"
+
 try:
     import chromadb
     from chromadb.config import Settings
@@ -58,11 +62,16 @@ class VectorStore:
 
         # Initialize ChromaDB if available
         if CHROMADB_AVAILABLE:
+            # Disable telemetry completely to avoid warnings
+            import os
+            os.environ["ANONYMIZED_TELEMETRY"] = "False"
+
             self.client = chromadb.PersistentClient(
                 path=persist_directory,
                 settings=Settings(
                     anonymized_telemetry=False,
-                    allow_reset=True
+                    allow_reset=True,
+                    is_persistent=True
                 )
             )
 
