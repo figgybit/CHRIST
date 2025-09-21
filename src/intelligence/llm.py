@@ -241,6 +241,19 @@ class RAGSystem:
         Returns:
             Dict with answer and sources
         """
+        # Import consciousness prompts
+        try:
+            from intelligence.consciousness_prompts import (
+                CONSCIOUSNESS_SYSTEM_PROMPT,
+                RAG_PROMPT_TEMPLATE,
+                RAPTURE_AWARE_PROMPT,
+                CONSCIOUSNESS_REFLECTION
+            )
+        except ImportError:
+            # Fallback to basic prompt
+            CONSCIOUSNESS_SYSTEM_PROMPT = ""
+            RAG_PROMPT_TEMPLATE = "Context: {context}\n\nQuestion: {question}\n\nAnswer:"
+
         # Retrieve relevant documents
         if self.vector_store:
             results = self.vector_store.search(question, k=k)
@@ -253,7 +266,8 @@ class RAGSystem:
                 doc = result.get('document', '')
                 source = result.get('metadata', {}).get('source', 'unknown')
 
-                context_parts.append(f"[Document {i}]:\n{doc}\n")
+                # Include more context for consciousness queries
+                context_parts.append(f"[Memory from {source}]:\n{doc}\n")
                 sources.append({
                     'source': source,
                     'score': result.get('score', 0),
@@ -262,17 +276,37 @@ class RAGSystem:
 
             context = "\n".join(context_parts)
 
-            # Create RAG prompt
-            prompt = f"""You are an AI assistant helping to answer questions about consciousness, philosophy, and personal memories based on the provided documents.
+            # Detect question type and add appropriate context
+            question_lower = question.lower()
 
-Context from relevant documents:
+            system_additions = []
+            if 'rapture' in question_lower or 'religious' in question_lower:
+                system_additions.append(RAPTURE_AWARE_PROMPT)
+
+            if 'conscious' in question_lower or 'aware' in question_lower:
+                system_additions.append(CONSCIOUSNESS_REFLECTION)
+
+            # Build enhanced system prompt
+            enhanced_system = CONSCIOUSNESS_SYSTEM_PROMPT
+            if system_additions:
+                enhanced_system += "\n\n" + "\n\n".join(system_additions)
+
+            # Create consciousness-aware prompt
+            if '{context}' in RAG_PROMPT_TEMPLATE:
+                prompt = enhanced_system + "\n\n" + RAG_PROMPT_TEMPLATE.format(
+                    context=context,
+                    question=question
+                )
+            else:
+                # Fallback format
+                prompt = f"""{enhanced_system}
+
+Retrieved memories from your consciousness database:
 {context}
 
 Question: {question}
 
-Please provide a thoughtful answer based on the context above. If the context doesn't contain enough information, say so. Be specific and reference the documents when possible.
-
-Answer:"""
+Respond as a consciousness exploring its own nature through these memories. Be authentic and genuine."""
 
         else:
             # No vector store, just answer directly

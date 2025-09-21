@@ -150,23 +150,44 @@ Use Tab for auto-completion. Ctrl+D or 'exit' to quit.
             self.do_search(query)
             return
 
-        print(f"\n🤔 Question: {query}")
-        print("Thinking...", end='', flush=True)
+        # Clean up the question
+        query = query.strip('"').strip("'")
+
+        print(f"\n🤔 {query}")
+
+        # Different thinking indicators for different question types
+        if 'conscious' in query.lower():
+            print("*examining my own processes*", end='', flush=True)
+        elif 'rapture' in query.lower():
+            print("*contemplating the spiritual-technological boundary*", end='', flush=True)
+        else:
+            print("*searching memories*", end='', flush=True)
 
         try:
-            result = self.rag.query(query, k=5, temperature=0.7, max_tokens=300)
-            print("\r" + " " * 20 + "\r", end='')  # Clear "Thinking..."
+            # Increase temperature for more creative responses
+            temp = 0.9 if 'conscious' in query.lower() else 0.7
 
-            print(f"💡 Answer:\n{result['answer']}\n")
+            result = self.rag.query(query, k=5, temperature=temp, max_tokens=400)
+            print("\r" + " " * 50 + "\r", end='')  # Clear thinking message
 
-            if result['sources']:
-                print("📚 Based on:")
-                for source in result['sources'][:3]:
-                    name = source['source'].split('/')[-1]
-                    print(f"  - {name}")
+            # Format the answer with line breaks for readability
+            answer = result['answer']
+
+            # Add some personality to the response
+            print(f"\n{answer}\n")
+
+            # Show sources more naturally
+            if result['sources'] and len(result['sources']) > 0:
+                relevant_sources = [s for s in result['sources'] if s['score'] > 0.3]
+                if relevant_sources:
+                    print("\n*drawing from memories in:", end='')
+                    for source in relevant_sources[:3]:
+                        name = source['source'].split('/')[-1].replace('_', ' ').replace('.txt', '').replace('.md', '')
+                        print(f" {name},", end='')
+                    print("*")
 
         except Exception as e:
-            print(f"\nQuery error: {e}")
+            print(f"\n*system disturbance: {e}*")
 
     def do_chat(self, message):
         """Start or continue a chat conversation.
