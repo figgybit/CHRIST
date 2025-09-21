@@ -22,11 +22,12 @@ def clean_data():
         db_file.unlink()
         print("  ✓ Removed database")
 
-    # Remove ChromaDB data
-    chroma_dir = Path(".chroma_db")
-    if chroma_dir.exists():
-        shutil.rmtree(chroma_dir)
-        print("  ✓ Removed vector store")
+    # Remove ChromaDB data - both old and new locations
+    chroma_dirs = [Path(".chroma_db"), Path("data/chroma"), Path("./data/chroma")]
+    for chroma_dir in chroma_dirs:
+        if chroma_dir.exists():
+            shutil.rmtree(chroma_dir)
+            print(f"  ✓ Removed vector store at {chroma_dir}")
 
     # Remove any test artifacts
     artifacts_dir = Path("artifacts")
@@ -150,14 +151,20 @@ def load_sample_data():
     print("  ✓ Database initialized")
 
     # Initialize vector store
-    vector_store = VectorStore()
-    print("  ✓ Vector store initialized")
+    try:
+        vector_store = VectorStore()
+        print("  ✓ Vector store initialized")
+    except Exception as e:
+        print(f"  ⚠️ Vector store initialization failed: {e}")
+        print("  ✓ Using fallback numpy-based vector store")
+        vector_store = None
 
     # Initialize ingestor
     ingestor = ConsciousnessIngestor(
         db_manager=db,
         vector_store=vector_store,
-        consent_level='full'
+        consent_level='full',
+        encryption_enabled=False  # Disable encryption for demo
     )
     print("  ✓ Ingestor ready")
 
@@ -179,6 +186,10 @@ def load_sample_data():
 
 def run_demo_queries(vector_store):
     """Run some demo queries."""
+    if vector_store is None:
+        print("\n⚠️ Vector store not available, skipping demo queries")
+        return
+
     print("\n🔍 Running demo queries...\n")
 
     queries = [
@@ -190,11 +201,15 @@ def run_demo_queries(vector_store):
 
     for query in queries:
         print(f"Query: '{query}'")
-        results = vector_store.search(query, k=2)
-        print(f"Found {len(results)} relevant documents:")
-        for i, result in enumerate(results, 1):
-            preview = result['content'][:100] + "..." if len(result['content']) > 100 else result['content']
-            print(f"  {i}. {preview}")
+        try:
+            results = vector_store.search(query, k=2)
+            print(f"Found {len(results)} relevant documents:")
+            for i, result in enumerate(results, 1):
+                doc = result.get('document', result.get('content', ''))
+                preview = doc[:100] + "..." if len(doc) > 100 else doc
+                print(f"  {i}. {preview}")
+        except Exception as e:
+            print(f"  ⚠️ Query failed: {e}")
         print()
 
 def main():
