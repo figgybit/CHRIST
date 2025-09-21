@@ -1,0 +1,165 @@
+version: '3.8'
+
+services:
+  christ-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: christ-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - APP_ENV=development
+      - DATABASE_URL=postgresql://christ:christ123@postgres:5432/christ_db
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - ./src:/app/src:ro
+      - ./data:/app/data
+      - ./logs:/app/logs
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - christ-network
+    command: python src/main.py --reload --host 0.0.0.0
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: christ-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: christ_db
+      POSTGRES_USER: christ
+      POSTGRES_PASSWORD: christ123
+      PGDATA: /data/postgres
+    volumes:
+      - postgres_data:/data/postgres
+      - ./scripts/init_db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - christ-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U christ -d christ_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: christ-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - christ-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Optional: pgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: christ-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@christproject.org
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - christ-network
+    depends_on:
+      - postgres
+    profiles:
+      - tools
+
+  # Optional: Celery worker for background tasks
+  celery-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: christ-celery-worker
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://christ:christ123@postgres:5432/christ_db
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    volumes:
+      - ./src:/app/src:ro
+      - ./data:/app/data
+      - ./logs:/app/logs
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - christ-network
+    command: celery -A src.consciousness.tasks worker --loglevel=info
+    profiles:
+      - celery
+
+  # Optional: Celery beat for scheduled tasks
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: christ-celery-beat
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://christ:christ123@postgres:5432/christ_db
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    volumes:
+      - ./src:/app/src:ro
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - christ-network
+    command: celery -A src.consciousness.tasks beat --loglevel=info
+    profiles:
+      - celery
+
+  # Optional: Flower for Celery monitoring
+  flower:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: christ-flower
+    restart: unless-stopped
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - FLOWER_PORT=5555
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+    networks:
+      - christ-network
+    command: celery -A src.consciousness.tasks flower
+    profiles:
+      - celery
+      - tools
+
+networks:
+  christ-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  pgadmin_data:
