@@ -27,6 +27,20 @@ from intent import intent
 from simulation import simulation
 from teleology import teleology
 
+# Import API endpoints
+try:
+    from api.endpoints import get_routers
+    API_AVAILABLE = True
+except ImportError:
+    API_AVAILABLE = False
+
+# Import Web UI routes
+try:
+    from web.routes import setup_web_routes
+    WEB_AVAILABLE = True
+except ImportError:
+    WEB_AVAILABLE = False
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -51,6 +65,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Register API routers
+if API_AVAILABLE:
+    for router in get_routers():
+        app.include_router(router)
+
+# Setup Web UI routes
+if WEB_AVAILABLE:
+    setup_web_routes(app)
 
 
 class HealthResponse(BaseModel):

@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}Chat - C.H.R.I.S.T.{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1 class="mb-4">Consciousness Chat</h1>
+
+        <!-- Chat Window -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Chat with Your Consciousness</h5>
+                <select class="form-select w-auto" id="persona-select">
+                    <option value="">Default Persona</option>
+                    <option value="advisor">Advisor</option>
+                    <option value="friend">Friend</option>
+                    <option value="coach">Life Coach</option>
+                    <option value="analyst">Analyst</option>
+                </select>
+            </div>
+            <div class="card-body" style="height: 500px; overflow-y: auto;" id="chat-messages">
+                <div class="text-center text-muted py-5">
+                    <h5>Start a conversation</h5>
+                    <p>Ask questions about your memories, seek insights, or explore patterns</p>
+                </div>
+            </div>
+            <div class="card-footer">
+                <form id="chat-form">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="chat-input"
+                               placeholder="Type your message..." autofocus>
+                        <button class="btn btn-primary" type="submit">Send</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <!-- Context Settings -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Context Settings</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Memory Context</label>
+                    <input type="range" class="form-range" min="0" max="20" value="5" id="context-window">
+                    <small class="text-muted">Include <span id="context-value">5</span> relevant memories</small>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Time Filter</label>
+                    <select class="form-select" id="time-filter">
+                        <option value="">All Time</option>
+                        <option value="recent">Recent (30 days)</option>
+                        <option value="year">This Year</option>
+                        <option value="custom">Custom Range</option>
+                    </select>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="use-context" checked>
+                    <label class="form-check-label" for="use-context">
+                        Use memory context
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conversation Starters -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Conversation Starters</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-secondary btn-sm" onclick="sendMessage('What have I been focused on lately?')">
+                        What have I been focused on lately?
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="sendMessage('What patterns do you see in my interactions?')">
+                        What patterns do you see?
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="sendMessage('What should I prioritize based on my goals?')">
+                        What should I prioritize?
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="sendMessage('Tell me about my relationships')">
+                        Tell me about my relationships
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat History -->
+        <div class="card">
+            <div class="card-header">
+                <h5>Recent Conversations</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group" id="chat-history">
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <small class="text-muted">Yesterday</small><br>
+                        Career planning discussion
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <small class="text-muted">3 days ago</small><br>
+                        Health and wellness check
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let conversationHistory = [];
+
+    // Chat form submission
+    document.getElementById('chat-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const input = document.getElementById('chat-input');
+        const message = input.value.trim();
+
+        if (!message) return;
+
+        // Add user message to chat
+        addMessage('user', message);
+        input.value = '';
+
+        // Send to API
+        try {
+            const response = await axios.post('/api/v1/simulation/chat', {
+                message: message,
+                persona: document.getElementById('persona-select').value,
+                context_window: parseInt(document.getElementById('context-window').value)
+            });
+
+            // Add AI response
+            addMessage('assistant', response.data.response || response.data.message || 'I understand. Let me think about that...');
+
+        } catch (error) {
+            addMessage('system', 'Error: ' + error.message);
+        }
+    });
+
+    function addMessage(role, content) {
+        const messagesDiv = document.getElementById('chat-messages');
+
+        // Clear initial message if this is the first message
+        if (conversationHistory.length === 0) {
+            messagesDiv.innerHTML = '';
+        }
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `mb-3 ${role === 'user' ? 'text-end' : ''}`;
+
+        const badge = role === 'user' ? 'bg-primary' :
+                      role === 'assistant' ? 'bg-success' : 'bg-warning';
+
+        messageDiv.innerHTML = `
+            <div class="d-inline-block max-w-75">
+                <div class="badge ${badge} mb-1">${role}</div>
+                <div class="card ${role === 'user' ? 'bg-primary text-white' : ''}">
+                    <div class="card-body py-2 px-3">
+                        ${content}
+                    </div>
+                </div>
+                <small class="text-muted">${new Date().toLocaleTimeString()}</small>
+            </div>
+        `;
+
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+        // Add to history
+        conversationHistory.push({ role, content });
+    }
+
+    function sendMessage(text) {
+        document.getElementById('chat-input').value = text;
+        document.getElementById('chat-form').dispatchEvent(new Event('submit'));
+    }
+
+    // Context window slider
+    document.getElementById('context-window').addEventListener('input', (e) => {
+        document.getElementById('context-value').textContent = e.target.value;
+    });
+</script>
+{% endblock %}

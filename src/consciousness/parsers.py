@@ -330,19 +330,65 @@ class DocumentParser:
         Returns:
             Parsed document data
         """
-        # This would require PyPDF2 or similar library
-        # Placeholder implementation
-        return {
-            'id': 'pdf_placeholder',
-            'type': 'document',
-            'format': 'pdf',
-            'content': {
-                'text': 'PDF parsing not yet implemented'
-            },
-            'metadata': {
-                'file_path': file_path
+        try:
+            import PyPDF2
+        except ImportError:
+            return {
+                'id': 'pdf_error',
+                'type': 'document',
+                'format': 'pdf',
+                'content': {'text': 'PyPDF2 not installed. Install with: pip install PyPDF2'},
+                'metadata': {'file_path': file_path}
             }
-        }
+
+        try:
+            text_content = []
+            metadata = {'pages': 0, 'file_path': file_path}
+
+            with open(file_path, 'rb') as file:
+                pdf_reader = PyPDF2.PdfReader(file)
+                metadata['pages'] = len(pdf_reader.pages)
+
+                # Extract text from all pages
+                for page_num, page in enumerate(pdf_reader.pages):
+                    try:
+                        text = page.extract_text()
+                        if text:
+                            text_content.append(f"[Page {page_num + 1}]\n{text}")
+                    except Exception as e:
+                        text_content.append(f"[Page {page_num + 1}] Error: {str(e)}")
+
+                # Get document info
+                if pdf_reader.metadata:
+                    metadata['title'] = pdf_reader.metadata.get('/Title', '')
+                    metadata['author'] = pdf_reader.metadata.get('/Author', '')
+                    metadata['subject'] = pdf_reader.metadata.get('/Subject', '')
+
+            combined_text = "\n\n".join(text_content)
+
+            # Generate ID from content hash
+            import hashlib
+            content_hash = hashlib.sha256(combined_text.encode()).hexdigest()
+
+            return {
+                'id': content_hash[:16],
+                'type': 'document',
+                'format': 'pdf',
+                'content': {
+                    'text': combined_text,
+                    'pages': text_content
+                },
+                'metadata': metadata
+            }
+
+        except Exception as e:
+            return {
+                'id': 'pdf_error',
+                'type': 'document',
+                'format': 'pdf',
+                'content': {'text': f'Error parsing PDF: {str(e)}'},
+                'metadata': {'file_path': file_path}
+            }
 
     def parse_docx(self, file_path: str) -> Dict[str, Any]:
         """
@@ -354,19 +400,83 @@ class DocumentParser:
         Returns:
             Parsed document data
         """
-        # This would require python-docx or similar library
-        # Placeholder implementation
-        return {
-            'id': 'docx_placeholder',
-            'type': 'document',
-            'format': 'docx',
-            'content': {
-                'text': 'DOCX parsing not yet implemented'
-            },
-            'metadata': {
-                'file_path': file_path
+        try:
+            from docx import Document
+        except ImportError:
+            return {
+                'id': 'docx_error',
+                'type': 'document',
+                'format': 'docx',
+                'content': {'text': 'python-docx not installed. Install with: pip install python-docx'},
+                'metadata': {'file_path': file_path}
             }
-        }
+
+        try:
+            doc = Document(file_path)
+
+            # Extract text from paragraphs
+            paragraphs = []
+            for para in doc.paragraphs:
+                if para.text.strip():
+                    paragraphs.append(para.text)
+
+            # Extract text from tables
+            tables_text = []
+            for table in doc.tables:
+                table_data = []
+                for row in table.rows:
+                    row_data = [cell.text.strip() for cell in row.cells]
+                    if any(row_data):
+                        table_data.append(' | '.join(row_data))
+                if table_data:
+                    tables_text.append('\n'.join(table_data))
+
+            # Combine all text
+            all_text = '\n\n'.join(paragraphs)
+            if tables_text:
+                all_text += '\n\n[Tables]\n' + '\n\n'.join(tables_text)
+
+            # Extract metadata
+            metadata = {
+                'file_path': file_path,
+                'paragraphs': len(paragraphs),
+                'tables': len(doc.tables)
+            }
+
+            # Try to get document properties
+            try:
+                core_props = doc.core_properties
+                metadata['title'] = core_props.title or ''
+                metadata['author'] = core_props.author or ''
+                metadata['created'] = str(core_props.created) if core_props.created else ''
+                metadata['modified'] = str(core_props.modified) if core_props.modified else ''
+            except:
+                pass
+
+            # Generate ID from content hash
+            import hashlib
+            content_hash = hashlib.sha256(all_text.encode()).hexdigest()
+
+            return {
+                'id': content_hash[:16],
+                'type': 'document',
+                'format': 'docx',
+                'content': {
+                    'text': all_text,
+                    'paragraphs': paragraphs,
+                    'tables': tables_text
+                },
+                'metadata': metadata
+            }
+
+        except Exception as e:
+            return {
+                'id': 'docx_error',
+                'type': 'document',
+                'format': 'docx',
+                'content': {'text': f'Error parsing DOCX: {str(e)}'},
+                'metadata': {'file_path': file_path}
+            }
 
 
 class UniversalParser:

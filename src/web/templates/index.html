@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - C.H.R.I.S.T.{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Consciousness Dashboard</h1>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <!-- Stats Cards -->
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-header">Total Events</div>
+            <div class="card-body">
+                <h2 class="card-title" id="total-events">0</h2>
+                <p class="card-text">Captured memories</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-header">Knowledge Nodes</div>
+            <div class="card-body">
+                <h2 class="card-title" id="knowledge-nodes">0</h2>
+                <p class="card-text">Entities & relationships</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-header">Active Goals</div>
+            <div class="card-body">
+                <h2 class="card-title" id="active-goals">0</h2>
+                <p class="card-text">In progress</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-header">Data Sources</div>
+            <div class="card-body">
+                <h2 class="card-title" id="data-sources">0</h2>
+                <p class="card-text">Connected</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Activity -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group" id="recent-activity">
+                    <div class="text-muted">Loading...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Memory Timeline -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Memory Timeline</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="timeline-chart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <!-- Quick Actions -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="/ingest" class="btn btn-primary">Upload Data</a>
+                    <a href="/search" class="btn btn-info">Search Memories</a>
+                    <a href="/chat" class="btn btn-success">Start Chat</a>
+                    <a href="/reflections" class="btn btn-warning">Generate Reflection</a>
+                    <button class="btn btn-outline-danger" onclick="exportData()">Export Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Health -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>System Health</h5>
+            </div>
+            <div class="card-body">
+                <div id="system-health">
+                    <div class="mb-2">
+                        <strong>API:</strong> <span class="badge bg-success">Online</span>
+                    </div>
+                    <div class="mb-2">
+                        <strong>Database:</strong> <span class="badge bg-success">Connected</span>
+                    </div>
+                    <div class="mb-2">
+                        <strong>Vector Store:</strong> <span class="badge bg-success">Ready</span>
+                    </div>
+                    <div class="mb-2">
+                        <strong>LLM Provider:</strong> <span class="badge bg-warning">Mock Mode</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Settings -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Privacy Settings</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Default Consent Level</label>
+                    <select class="form-select" id="consent-level">
+                        <option value="none">None</option>
+                        <option value="metadata">Metadata Only</option>
+                        <option value="anonymized">Anonymized</option>
+                        <option value="full" selected>Full</option>
+                    </select>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="encryption-enabled" checked>
+                    <label class="form-check-label" for="encryption-enabled">
+                        Encryption Enabled
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="audit-logging" checked>
+                    <label class="form-check-label" for="audit-logging">
+                        Audit Logging
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Load dashboard data
+    async function loadDashboard() {
+        try {
+            // Get stats
+            const stats = await axios.get('/api/v1/consciousness/events?limit=0');
+            document.getElementById('total-events').textContent = stats.data.count || 0;
+
+            // Get recent activity
+            const events = await axios.get('/api/v1/consciousness/events?limit=5');
+            const activityHtml = events.data.events.map(event => `
+                <a href="#" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">${event.type}</h6>
+                        <small>${new Date(event.timestamp).toLocaleString()}</small>
+                    </div>
+                    <p class="mb-1">${event.metadata?.description || 'No description'}</p>
+                </a>
+            `).join('');
+            document.getElementById('recent-activity').innerHTML = activityHtml || '<div class="text-muted">No recent activity</div>';
+
+            // Initialize timeline chart
+            const ctx = document.getElementById('timeline-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Events',
+                        data: [12, 19, 3, 5, 2, 3, 8],
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+        } catch (error) {
+            console.error('Error loading dashboard:', error);
+        }
+    }
+
+    function exportData() {
+        if (confirm('Export all your data?')) {
+            window.location.href = '/api/v1/consciousness/export';
+        }
+    }
+
+    // Load on page ready
+    document.addEventListener('DOMContentLoaded', loadDashboard);
+</script>
+{% endblock %}
