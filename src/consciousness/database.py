@@ -244,13 +244,19 @@ class DatabaseManager:
         """
         session = self.get_session()
         try:
+            # Convert encrypted content to JSON string if it's a dict
+            content_encrypted = event_data.get('content_encrypted')
+            if isinstance(content_encrypted, dict):
+                import json
+                content_encrypted = json.dumps(content_encrypted)
+
             event = Event(
                 id=event_data['id'],
                 user_id=event_data.get('user_id', 'default'),
                 timestamp=datetime.fromisoformat(event_data['timestamp']),
                 event_type=event_data['type'],
                 source=event_data.get('source'),
-                content_encrypted=event_data.get('content_encrypted'),
+                content_encrypted=content_encrypted,
                 content_hash=event_data.get('content_hash'),
                 meta_data=event_data.get('metadata', {}),
                 consent_level=event_data.get('consent_level', 'full')
