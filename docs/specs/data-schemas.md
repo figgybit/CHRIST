@@ -47,7 +47,7 @@ All data objects inherit from this base schema:
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://christ.ai/schemas/base.json",
+  "$id": "https://christs.ai/schemas/base.json",
   "type": "object",
   "required": ["id", "created_at", "schema_version"],
   "properties": {
@@ -109,7 +109,7 @@ For emails, chats, SMS, social media posts:
 
 ```json
 {
-  "$id": "https://christ.ai/schemas/event/message.json",
+  "$id": "https://christs.ai/schemas/event/message.json",
   "allOf": [{"$ref": "base.json"}],
   "type": "object",
   "required": ["event_type", "timestamp", "content"],
@@ -213,7 +213,7 @@ For calendar events, location checkins, health activities:
 
 ```json
 {
-  "$id": "https://christ.ai/schemas/event/activity.json",
+  "$id": "https://christs.ai/schemas/event/activity.json",
   "allOf": [{"$ref": "base.json"}],
   "type": "object",
   "required": ["event_type", "activity_type", "start_time"],
@@ -284,7 +284,7 @@ For journal entries, notes, voice memos:
 
 ```json
 {
-  "$id": "https://christ.ai/schemas/event/thought.json",
+  "$id": "https://christs.ai/schemas/event/thought.json",
   "allOf": [{"$ref": "base.json"}],
   "type": "object",
   "required": ["event_type", "timestamp", "content"],
@@ -346,7 +346,7 @@ For journal entries, notes, voice memos:
 
 ```json
 {
-  "$id": "https://christ.ai/schemas/entity/person.json",
+  "$id": "https://christs.ai/schemas/entity/person.json",
   "allOf": [{"$ref": "base.json"}],
   "type": "object",
   "required": ["entity_type", "names"],
@@ -409,7 +409,7 @@ For journal entries, notes, voice memos:
 
 ```json
 {
-  "$id": "https://christ.ai/schemas/entity/location.json",
+  "$id": "https://christs.ai/schemas/entity/location.json",
   "allOf": [{"$ref": "base.json"}],
   "type": "object",
   "required": ["entity_type", "name"],
@@ -463,7 +463,7 @@ For journal entries, notes, voice memos:
 
 ```json
 {
-  "$id": "https://christ.ai/schemas/relationship.json",
+  "$id": "https://christs.ai/schemas/relationship.json",
   "allOf": [{"$ref": "base.json"}],
   "type": "object",
   "required": ["relationship_type", "source_id", "target_id"],
@@ -518,7 +518,7 @@ For journal entries, notes, voice memos:
 
 ```json
 {
-  "$id": "https://christ.ai/schemas/artifact.json",
+  "$id": "https://christs.ai/schemas/artifact.json",
   "allOf": [{"$ref": "base.json"}],
   "type": "object",
   "required": ["artifact_type", "storage_path", "hash"],
@@ -596,7 +596,7 @@ Special fields that require encryption:
 
 ```json
 {
-  "$id": "https://christ.ai/schemas/privacy-annotations.json",
+  "$id": "https://christs.ai/schemas/privacy-annotations.json",
   "type": "object",
   "properties": {
     "pii_fields": {

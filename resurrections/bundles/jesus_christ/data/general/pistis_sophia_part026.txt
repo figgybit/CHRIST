@@ -1,0 +1,24 @@
+</a>
+          <!--?lit$49386103$-->
+        </div>
+        <media-menu class="style-scope primary-nav x-scope media-menu-1"><!---->
+          <div class="media-menu-container closed style-scope media-menu">
+            <div class="overflow-clip style-scope media-menu">
+              <nav class="media-menu-inner style-scope media-menu" aria-expanded="false">
+                <div class="menu-group style-scope media-menu">
+                  <!--?lit$49386103$--><!---->
+                  <media-button class="style-scope media-menu x-scope media-button-1" data-mediatype="web"><!---->
+                    <a class="menu-item web  style-scope media-button" href="https://web.archive.org"
+                      data-event-click-tracking="TopNav|NavMenuWeb" title="Expand web menu">
+                      <!--?lit$49386103$-->
+                      <span class="icon  style-scope media-button">
+                        <!--?lit$49386103$-->
+                        <svg height="40" viewBox="0 0 40 40" width="40" xmlns="http://www.w3.org/2000/svg"
+                          aria-labelledby="webTitleID webDescID" class="style-scope media-button">
+                          <title id="webTitleID" class="style-scope media-button">Web icon</title>
+                          <desc id="webDescID" class="style-scope media-button">An illustration of a computer
+                            application window</desc>
+                          <path class="fill-color style-scope media-button"
+                            d="m8 28.7585405v-8.1608108-9.3577297h24v9.3577297 8.1608108zm14.2702703-15.8863783h-12.43243246v2.6114594h12.43243246zm7.7837838 14.0365946v-7.0727027-1.8497838h-20.21621626v1.8497838 7.0727027zm-3.7837838-14.0365946h-2.7027027v2.6114594h2.7027027zm4 0h-2.7027027v2.6114594h2.7027027z"
+                            fill-rule="evenodd"></path>
+                          </svg>

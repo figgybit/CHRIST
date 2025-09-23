@@ -1,0 +1,18 @@
+if (document.querySelectorAll('.more_search').length) {
+    archive_analytics.send_scroll_fetch_base_event();
+  }
+}
+</script>
+          <img src="//athena.archive.org/0.gif?kind=track_js&track_js_case=control&cache_bust=1848892860" alt="" />
+          <noscript>
+        <img src="//athena.archive.org/0.gif?kind=track_js&track_js_case=disabled&cache_bust=453409793" />
+      </noscript>
+          <script  nonce="911cf335a67253e4591914faa7e6ebec" >
+        document.addEventListener('DOMContentLoaded', function() {
+          if (typeof archive_analytics !== 'undefined')
+            archive_analytics.create_tracking_image('in_page_executes');
+        });
+      </script>
+      </div>
+  </body>
+</html>

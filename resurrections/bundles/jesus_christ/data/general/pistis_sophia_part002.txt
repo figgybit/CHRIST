@@ -1,0 +1,46 @@
+<meta name="baggage" content="sentry-trace_id=5b38c8dc03f24cd5817ce890f05b7820,sentry-sample_rate=0.001,sentry-transaction=%2Fdownload.php,sentry-public_key=94bf3037c1e245c8a927aaa4daad2dbb,sentry-environment=production,sentry-sampled=false"/>    <meta name="sentry-trace" content="5b38c8dc03f24cd5817ce890f05b7820-f41bc79754e54e8a-0"/>
+    <script  nonce="911cf335a67253e4591914faa7e6ebec" >
+/* @licstart  The following is the entire license notice for the
+ * JavaScript code in this page.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @licend  The above is the entire license notice
+ * for the JavaScript code in this page.
+ */
+</script>
+        <meta charset="UTF-8">
+                      <meta property="mediatype" content="texts">
+                      <meta property="primary_collection" content="">
+            <script src="//archive.org/includes/athena.js?v=81866908" type="text/javascript"></script>
+    <script src="//archive.org/includes/apollo.js?v=81866908" type="text/javascript"></script>
+    <script src="//archive.org/components/npm/lit/polyfill-support.js?v=81866908" type="text/javascript"></script>
+    <script src="//archive.org/components/npm/@webcomponents/webcomponentsjs/webcomponents-bundle.js?v=81866908" type="text/javascript"></script>
+<script nonce="911cf335a67253e4591914faa7e6ebec" >
+      window.__realDefine = customElements.define.bind(customElements);
+      customElements.define = function() {
+        try {
+          return window.__realDefine.apply(this, arguments);
+        } catch (e) {
+          console.warn(e);
+        }
+      }
+    </script>    <script src="//archive.org/includes/build/js/ia-topnav.min.js?v=81866908" type="text/javascript"></script>
+    <script src="//archive.org/includes/build/js/archive.min.js?v=81866908" type="text/javascript"></script>
+<link rel="canonical" href="https://archive.org/details/pistissophiagnos00mead">
+    <link href="//archive.org/includes/build/css/archive.min.css?v=81866908" rel="stylesheet" type="text/css"/>
+    <link rel="SHORTCUT ICON" href="https://archive.org/images/glogo.jpg"/>
+  </head>
+  <body class="navia ">
+    <a href="#maincontent" class="hidden-for-screen-readers">Skip to main content</a>

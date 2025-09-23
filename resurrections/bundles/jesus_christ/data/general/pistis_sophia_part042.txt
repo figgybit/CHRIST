@@ -1,0 +1,12 @@
+</div>
+          <!--?lit$49386103$-->
+          <a class="upload style-scope primary-nav" href="/create">
+            <!--?lit$49386103$-->
+            <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"
+              aria-labelledby="uploadTitleID uploadDescID" class="style-scope primary-nav">
+              <title id="uploadTitleID" class="style-scope primary-nav">Upload icon</title>
+              <desc id="uploadDescID" class="style-scope primary-nav">An illustration of a horizontal line over an up
+                pointing arrow.</desc>
+              <path class="fill-color style-scope primary-nav" d="m20 12.8 8 10.4h-4.8v8.8h-6.4v-8.8h-4.8zm12-4.8v3.2h-24v-3.2z"
+                fill-rule="evenodd"></path>
+              </svg>

@@ -1,0 +1,88 @@
+.wayback-search-1 p.wayback-search {
+    margin-bottom: 1rem;
+    font-size: 1.6rem;
+    text-align: center;
+  }
+
+.wayback-search-1 fieldset.wayback-search {
+    padding: .5rem;
+    border-radius: 5px;
+    box-shadow: none;
+  }
+
+.wayback-search-1 input.wayback-search {
+    padding-left: 3rem;
+    margin-top: .3rem;
+    font-size: 1.4rem;
+    border-color: #bca38e;
+    background: #fff;
+  }
+
+.wayback-search-1 input.wayback-search::placeholder,
+  .wayback-search-1 input.wayback-search::-webkit-input-placeholder {
+    color: #8e8e8e;
+  }
+
+.wayback-search-1 .search-field.wayback-search svg.wayback-search {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+@media (min-width: 890px) {
+
+.wayback-search-1 fieldset.wayback-search a.wayback-search,
+    .wayback-search-1 .search-field.wayback-search {
+      display: block;
+      width: auto;
+    }
+
+.wayback-search-1 fieldset.wayback-search a.wayback-search {
+      margin: 0 1.5rem;
+    }
+
+}
+</style><!-- Shady DOM styles for save-page-form -->
+<style scope="save-page-form-1">
+  .save-page-form-1 div.save-page-form {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-column-gap: .8rem;
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+
+.save-page-form-1 input.save-page-form[type="text"] {
+    width: 100%;
+    height: 3rem;
+    box-sizing: border-box;
+    border: 1px solid #999;
+    border-radius: .5rem;
+    color: #222;
+    font-size: inherit;
+  }
+
+.save-page-form-1 input.save-page-form[type="submit"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding: .4rem .8rem;
+    font: normal 1.3rem 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    text-transform: uppercase;
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    background: #222;
+    cursor: pointer;
+  }
+
+.save-page-form-1 .error.save-page-form {
+    display: none;
+    margin-top: .5rem;
+    font-weight: bold;
+    color: #ffcd27;
+  }
+
+.save-page-form-1 .visible.save-page-form {
+    display: block;
+  }

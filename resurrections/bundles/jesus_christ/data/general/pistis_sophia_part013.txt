@@ -1,0 +1,89 @@
+@media (min-width: 890px) {
+    .search-menu-1 .search-menu-inner.search-menu {
+      overflow: visible;
+      right: 2rem;
+      left: auto;
+      z-index: 5;
+      padding: 1rem 2rem;
+      transition: opacity 0.2s ease-in-out;
+      font-size: 1.4rem;
+      color: #333;
+      border-radius: 2px;
+      background: #fff;
+      box-shadow: 0 1px 2px 1px rgba(0, 0, 0, 0.15);
+    }
+
+.search-menu-1 .search-menu-inner.search-menu:after {
+      position: absolute;
+      right: 7px;
+      top: -7px;
+      width: 12px;
+      height: 7px;
+      box-sizing: border-box;
+      color: #fff;
+      content: '';
+      border-bottom: 7px solid currentColor;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+    }
+
+.search-menu-1 .initial.search-menu,
+    .search-menu-1 .closed.search-menu {
+      opacity: 0;
+      transition-duration: 0.2s;
+    }
+
+.search-menu-1 .open.search-menu {
+      opacity: 1;
+    }
+
+.search-menu-1 label.search-menu {
+      padding: 0;
+      font-weight: normal;
+      margin: 0;
+    }
+
+.search-menu-1 label.search-menu+label.search-menu {
+      padding-top: 7px;
+    }
+
+.search-menu-1 a.search-menu {
+      padding: 1rem 0 0 0;
+    }
+
+}
+</style><!-- Shady DOM styles for ia-wayback-search --><!-- Shady DOM styles for wayback-search -->
+<style scope="wayback-search-1">
+  .wayback-search-1 {
+    font: normal 1.2rem/1.5 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+
+.wayback-search-1 form.wayback-search {
+    max-width: 600px;
+  }
+
+.wayback-search-1 p.wayback-search {
+    margin-top: 0;
+    font-weight: 200;
+  }
+
+.wayback-search-1 a.wayback-search {
+    font-weight: 500;
+    text-decoration: none;
+    color: #fff;
+  }
+
+.wayback-search-1 fieldset.wayback-search {
+    padding: 0.7rem 2rem;
+    margin: 1.5rem 0;
+    box-sizing: border-box;
+    text-align: center;
+    border: none;
+    border-radius: 7px;
+    background-color: #fcf5e6;
+    box-shadow: 3px 3px 0 0 #c3ad97;
+  }
+
+.wayback-search-1 label.wayback-search {
+    display: none;
+  }

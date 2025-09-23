@@ -1,0 +1,93 @@
+@media (max-width: 889px) {
+    .primary-nav-1 slot.primary-nav[name='opt-sec-logo'] {
+      display: none;
+    }
+
+.primary-nav-1 .right-side-section.primary-nav {
+      display: initial;
+    }
+
+.primary-nav-1 .right-side-section.primary-nav .user-info.primary-nav {
+      float: right;
+    }
+
+}
+
+@media (min-width: 890px) {
+    .primary-nav-1 {
+      ;
+    }
+
+.primary-nav-1 nav.primary-nav {
+      display: flex;
+      z-index: 4;
+      height: 5rem;
+      padding-right: 1.5rem;
+    }
+
+.primary-nav-1 slot.primary-nav[name='opt-sec-logo-mobile'] {
+      display: none;
+    }
+
+.primary-nav-1 .ia-logo.primary-nav,
+    .primary-nav-1 .ia-wordmark.primary-nav {
+      margin-right: 10px;
+    }
+
+.primary-nav-1 .hamburger.primary-nav,
+    .primary-nav-1 .search-trigger.primary-nav,
+    .primary-nav-1 .mobile-donate-link.primary-nav {
+      display: none;
+    }
+
+.primary-nav-1 .user-info.primary-nav {
+      display: block;
+      float: right;
+      vertical-align: middle;
+      height: 100%;
+    }
+
+.primary-nav-1 .user-info.primary-nav .user-menu.primary-nav img.primary-nav {
+      height: 3rem;
+      width: 3rem;
+      margin-right: 0.5rem;
+    }
+
+.primary-nav-1 .user-menu.primary-nav {
+      padding: 1rem 0.5rem;
+    }
+
+.primary-nav-1 .user-menu.active.primary-nav {
+      background: transparent;
+    }
+
+.primary-nav-1 .user-menu.primary-nav img.primary-nav {
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 0.5rem;
+    }
+
+.primary-nav-1 .upload.primary-nav {
+      display: block;
+      padding: 1rem 0.5rem;
+      float: right;
+      font-size: 1.4rem;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: #999;
+    }
+
+.primary-nav-1 .upload.primary-nav:active,
+    .primary-nav-1 .upload.primary-nav:focus,
+    .primary-nav-1 .upload.primary-nav:hover {
+      color: #fff;
+    }
+
+.primary-nav-1 .upload.primary-nav:focus-visible {
+      outline: none;
+    }
+
+.primary-nav-1 .upload.primary-nav svg.primary-nav {
+      vertical-align: middle;
+      fill: #999;
+    }

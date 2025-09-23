@@ -181,7 +181,7 @@ Responsible for:
 
 ### Reporting Security Issues
 - **DO NOT** open public issues for security vulnerabilities
-- Email security@christproject.org with details
+- Email security@christs.ai with details
 - Use PGP encryption if possible (key: [TBD])
 - We aim to respond within 48 hours
 
@@ -237,7 +237,7 @@ Violations will result in:
 2. Temporary ban
 3. Permanent ban
 
-Report issues to conduct@christproject.org
+Report issues to conduct@christs.ai
 
 ## 🎉 Recognition
 

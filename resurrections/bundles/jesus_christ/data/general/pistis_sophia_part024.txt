@@ -1,0 +1,18 @@
+<ia-topnav locallinks="true" waybackpagesarchived="__WB_PAGES_ARCHIVED__" class="x-scope ia-topnav-1"><!---->
+  <div class="topnav style-scope ia-topnav">
+    <primary-nav class="style-scope ia-topnav x-scope primary-nav-1"><!---->
+      <nav class="style-scope primary-nav">
+        <button class="hamburger style-scope primary-nav" title="Open main menu"
+          data-event-click-tracking="TopNav|NavHamburger">
+          <icon-hamburger class="style-scope primary-nav x-scope icon-hamburger-1"><!---->
+            <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-labelledby="hamburgerTitleID hamburgerDescID"
+              class="style-scope icon-hamburger">
+              <title id="hamburgerTitleID" class="style-scope icon-hamburger">Hamburger icon</title>
+              <desc id="hamburgerDescID" class="style-scope icon-hamburger">An icon used to represent a menu that can be
+                toggled by interacting with this icon.</desc>
+              <path
+                d="m30.5 26.5c.8284271 0 1.5.6715729 1.5 1.5s-.6715729 1.5-1.5 1.5h-21c-.82842712 0-1.5-.6715729-1.5-1.5s.67157288-1.5 1.5-1.5zm0-8c.8284271 0 1.5.6715729 1.5 1.5s-.6715729 1.5-1.5 1.5h-21c-.82842712 0-1.5-.6715729-1.5-1.5s.67157288-1.5 1.5-1.5zm0-8c.8284271 0 1.5.6715729 1.5 1.5s-.6715729 1.5-1.5 1.5h-21c-.82842712 0-1.5-.6715729-1.5-1.5s.67157288-1.5 1.5-1.5z"
+                fill="#999" fill-rule="evenodd" class="style-scope icon-hamburger"></path>
+              </svg>
+              </icon-hamburger>
+        </button>

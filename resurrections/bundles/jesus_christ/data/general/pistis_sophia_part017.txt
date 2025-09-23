@@ -1,0 +1,94 @@
+.more-slider-1 a.more-slider {
+    display: block;
+    padding: 1rem 0;
+    text-decoration: none;
+    color: #fff;
+  }
+</style><!-- Shady DOM styles for media-subnav -->
+<style scope="media-subnav-1">
+  .media-subnav-1 h4.media-subnav {
+    font-size: 1.6rem;
+  }
+
+.media-subnav-1 a.media-subnav {
+    text-decoration: none;
+    color: #fff;
+  }
+
+.media-subnav-1 ul.media-subnav {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+.media-subnav-1 li.media-subnav+li.media-subnav {
+    padding-top: 1.5rem;
+  }
+
+@media (min-width: 890px) {
+    .media-subnav-1 h4.media-subnav {
+      margin: 0 0 1rem 0;
+      font-weight: 100;
+    }
+
+.media-subnav-1 ul.media-subnav {
+      font-size: 1.3rem;
+    }
+
+.media-subnav-1 li.media-subnav {
+      padding-bottom: .5rem;
+    }
+
+.media-subnav-1 li.media-subnav+li.media-subnav {
+      padding-top: 0;
+    }
+
+.media-subnav-1 li.media-subnav a.media-subnav {
+      display: block;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+}
+
+.media-subnav-1 img.media-subnav {
+    display: block;
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 1rem auto;
+    border-radius: 45px;
+  }
+
+.media-subnav-1 h3.media-subnav {
+    margin-top: 0;
+    font-size: 1.8rem;
+  }
+
+.media-subnav-1 .icon-links.media-subnav {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: space-evenly;
+    -ms-flex-pack: space-evenly;
+    justify-content: space-evenly;
+    text-align: center;
+  }
+
+.media-subnav-1 .icon-links.media-subnav a.media-subnav {
+    display: inline-block;
+    width: 12rem;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+    text-overflow: ellipsis;
+  }
+
+.media-subnav-1 .icon-links.media-subnav a.media-subnav+a.media-subnav {
+    margin-left: 2rem;
+  }
+
+.media-subnav-1 .featured.media-subnav h4.media-subnav {
+    display: none;
+  }

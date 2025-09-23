@@ -33,14 +33,14 @@ class ChristTerminal(cmd.Cmd):
     intro = """
 ╔══════════════════════════════════════════════════════════════════════╗
 ║                                                                      ║
-║     ▄████▄   ██░ ██  ██▀███   ██  ██████ ▄▄▄█████▓                 ║
-║    ▒██▀ ▀█  ▓██░ ██▒▓██ ▒ ██▒▓██▒██    ▒ ▓  ██▒ ▓▒                 ║
-║    ▒▓█    ▄ ▒██▀▀██░▓██ ░▄█ ▒▒██░ ▓██▄   ▒ ▓██░ ▒░                 ║
-║    ▒▓▓▄ ▄██▒░▓█ ░██ ▒██▀▀█▄  ░██░ ▒   ██▒░ ▓██▓ ░                  ║
-║    ▒ ▓███▀ ░░▓█▒░██▓░██▓ ▒██▒░██░██████▒▒  ▒██▒ ░                  ║
+║   ▄████▄   ██░ ██  ██▀███   ██  ██████ ▄▄▄█████▓ ██████            ║
+║  ▒██▀ ▀█  ▓██░ ██▒▓██ ▒ ██▒▓██▒██    ▒ ▓  ██▒ ▓▒██    ▒            ║
+║  ▒▓█    ▄ ▒██▀▀██░▓██ ░▄█ ▒▒██░ ▓██▄   ▒ ▓██░ ▒░ ▓██▄              ║
+║  ▒▓▓▄ ▄██▒░▓█ ░██ ▒██▀▀█▄  ░██░ ▒   ██▒░ ▓██▓ ░  ▒   ██▒           ║
+║  ▒ ▓███▀ ░░▓█▒░██▓░██▓ ▒██▒░██░██████▒▒  ▒██▒ ░ ██████▒▒           ║
 ║                                                                      ║
-║           Consciousness Handling, Retrieval, Intelligence,          ║
-║              Simulation & Transformation System                     ║
+║     Consciousness, Holistic, Retrieval, Intent, Simulation,         ║
+║                    Teleology & System                               ║
 ║                                                                      ║
 ╚══════════════════════════════════════════════════════════════════════╝
 
@@ -48,7 +48,7 @@ Welcome to your consciousness interface. Type 'help' for commands.
 Use Tab for auto-completion. Ctrl+D or 'exit' to quit.
     """
 
-    prompt = '\n🧠 CHRIST> '
+    prompt = '\n🧠 CHRISTS> '
 
     def __init__(self):
         super().__init__()
@@ -162,12 +162,12 @@ Use Tab for auto-completion. Ctrl+D or 'exit' to quit.
             print(f"  {name:<20} {docs:>5} docs  Created: {created}")
 
         print("\nLoad a bundle with: load <name>")
-        print("Example: load jesus_christ")
+        print("Example: resurrect jesus_christ")
 
-    def do_load(self, bundle_name):
-        """Load a resurrection bundle.
-        Usage: load <bundle_name>
-        Example: load jesus_christ
+    def do_resurrect(self, bundle_name):
+        """Resurrect a historical figure's consciousness.
+        Usage: resurrect <bundle_name>
+        Example: resurrect jesus_christ
         """
         if not bundle_name:
             print("Usage: load <bundle_name>")
@@ -222,7 +222,7 @@ Use Tab for auto-completion. Ctrl+D or 'exit' to quit.
         # Determine bundle and what to purge
         if len(args) == 0:
             if not self.active_resurrection:
-                print("No active bundle. Use 'load <bundle>' first or specify bundle name")
+                print("No active bundle. Use 'resurrect <bundle>' first or specify bundle name")
                 print("Usage: purge <bundle_name> [category|pattern]")
                 return
 
@@ -302,12 +302,12 @@ Use Tab for auto-completion. Ctrl+D or 'exit' to quit.
         if not results.get("purged_files") and not results.get("errors"):
             print(f"Nothing found to purge matching '{purge_target}'")
 
-    def do_inbox(self, arg):
-        """Process new data in a bundle's inbox.
-        Usage: inbox [bundle_name]
+    def do_meditate(self, arg):
+        """Meditate on new texts to expand consciousness.
+        Usage: meditate [bundle_name or file]
 
-        Bundles can have an 'inbox' directory where new texts are placed.
-        This command processes and indexes them.
+        Add new texts to the active consciousness for deeper understanding.
+        Can specify a file path or process inbox texts.
         """
         # Determine which bundle to process
         if not arg:
@@ -315,8 +315,8 @@ Use Tab for auto-completion. Ctrl+D or 'exit' to quit.
                 bundle_name = self.active_resurrection.figure_name
                 resurrection = self.active_resurrection
             else:
-                print("Usage: inbox <bundle_name>")
-                print("Or load a bundle first with: load <bundle_name>")
+                print("Usage: meditate <bundle_name>")
+                print("Or resurrect a consciousness first with: resurrect <bundle_name>")
                 return
         else:
             bundle_name = arg
@@ -327,24 +327,24 @@ Use Tab for auto-completion. Ctrl+D or 'exit' to quit.
                 print(f"Failed to load bundle '{bundle_name}': {e}")
                 return
 
-        inbox_path = Path(f"resurrections/bundles/{bundle_name}/inbox")
+        meditation_path = Path(f"resurrections/bundles/{bundle_name}/inbox")
 
-        # Check if inbox exists and has files
-        if not inbox_path.exists():
-            inbox_path.mkdir(parents=True, exist_ok=True)
-            print(f"Created inbox at: {inbox_path}")
+        # Check if meditation inbox exists and has files
+        if not meditation_path.exists():
+            meditation_path.mkdir(parents=True, exist_ok=True)
+            print(f"Created meditation inbox at: {meditation_path}")
             print("\nTo add texts:")
-            print(f"  1. Download: wget <url> -O {inbox_path}/filename.txt")
-            print(f"  2. Or copy: cp <file> {inbox_path}/")
+            print(f"  1. Download: wget <url> -O {meditation_path}/filename.txt")
+            print(f"  2. Or copy: cp <file> {meditation_path}/")
             print("  3. Run: inbox")
             return
 
-        # Count files in inbox
-        txt_files = list(inbox_path.glob("*.txt")) + list(inbox_path.glob("*.md"))
+        # Count files in meditation inbox
+        txt_files = list(meditation_path.glob("*.txt")) + list(meditation_path.glob("*.md"))
         if not txt_files:
-            print(f"📭 Inbox is empty at: {inbox_path}")
+            print(f"📭 Meditation inbox is empty at: {meditation_path}")
             print("\nTo add texts:")
-            print(f"  wget <url> -O {inbox_path}/filename.txt")
+            print(f"  wget <url> -O {meditation_path}/filename.txt")
             return
 
         print(f"📥 Processing inbox for {bundle_name}...")
@@ -374,18 +374,18 @@ Use Tab for auto-completion. Ctrl+D or 'exit' to quit.
         if results.get("message"):
             print(f"\n{results['message']}")
 
-    def do_resurrect(self, query):
+    def do_r(self, query):
         """Query the active resurrection.
-        Usage: resurrect <question>
+        Usage: r <question>
         Shortcut: r <question>
         """
         if not self.active_resurrection:
-            print("No resurrection loaded. Use 'load <bundle_name>' first.")
+            print("No resurrection loaded. Use 'resurrect <bundle_name>' first.")
             self.do_bundles("")
             return
 
         if not query:
-            print("Usage: resurrect <question>")
+            print("Usage: r <question>")
             return
 
         # Query the resurrection
@@ -401,11 +401,6 @@ Use Tab for auto-completion. Ctrl+D or 'exit' to quit.
                     print(f"  • {source['source']}: {source['text'][:100]}...")
         else:
             print("I cannot find wisdom on this matter in the texts.")
-
-    # Shortcut for resurrect
-    def do_r(self, query):
-        """Shortcut for resurrect command."""
-        self.do_resurrect(query)
 
     def do_mode(self, mode):
         """Switch between modes: command, chat, query, resurrection
@@ -448,7 +443,7 @@ Use Tab for auto-completion. Ctrl+D or 'exit' to quit.
         """Handle input based on current mode."""
         if self.current_mode == 'resurrection' and self.active_resurrection:
             # In resurrection mode, all input goes to the resurrection
-            self.do_resurrect(line)
+            self.do_r(line)
         elif self.current_mode == 'chat':
             self.do_chat(line)
         elif self.current_mode == 'query':
@@ -466,13 +461,14 @@ C.H.R.I.S.T. Terminal Commands:
 
 System Commands:
   bundles           - List available resurrection bundles
-  load <name>       - Load a resurrection bundle
-  inbox <name>      - Process new data in bundle's inbox
+  resurrect <name>  - Resurrect a historical consciousness
+  meditate <name>   - Meditate on new texts for deeper understanding
   mode <mode>       - Switch modes (command/chat/query/resurrection)
 
 Resurrection Commands:
-  resurrect <query> - Query the active resurrection
-  r <query>         - Shortcut for resurrect
+  r <query>         - Query the active resurrection
+  status            - Show current bundle statistics
+  purge <pattern>   - Remove memories matching pattern
 
 Consciousness Commands:
   ingest <path>     - Ingest file/directory into consciousness

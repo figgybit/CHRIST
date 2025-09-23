@@ -587,7 +587,7 @@ safety check
 ## Getting Help
 
 ### Resources
-- [Documentation](https://christ.ai/docs)
+- [Documentation](https://christs.ai/docs)
 - [API Reference](./docs/api/)
 - [Architecture Guide](./docs/ARCHITECTURE.md)
 - [Contributing Guide](./CONTRIBUTING.md)

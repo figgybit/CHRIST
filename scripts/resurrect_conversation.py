@@ -9,8 +9,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 sys.path.insert(0, str(Path(__file__).parent / 'src'))
 
-from resurrections.jesus_conversational import JesusConversational
-from resurrections.resurrection import ResurrectionBot
+from resurrections.resurrection_consciousness import ResurrectionBot
 
 
 def conversational_demo():
@@ -23,9 +22,7 @@ def conversational_demo():
     print("watching fishermen mend their nets as the sun sets.\n")
 
     # Initialize
-    jesus = JesusConversational()
-    jesus.load_consciousness()
-    bot = ResurrectionBot(jesus)
+    bot = ResurrectionBot("jesus_christ")
 
     print("-" * 70)
     print("\n[Jesus turns to you with a warm smile]\n")

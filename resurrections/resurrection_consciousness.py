@@ -1,8 +1,6 @@
-#!/usr/bin/env python3
 """
-Resurrection Consciousness System
-Each resurrection has its own consciousness bundle - data + vector database
-Portable, distributable consciousness instances
+Resurrection consciousness system for historical figures.
+Uses vector database and RAG for authentic responses.
 """
 
 import os
@@ -10,281 +8,324 @@ import sys
 import json
 import shutil
 from pathlib import Path
-from typing import Dict, Any, List, Optional
-import uuid
+from typing import Dict, List, Any, Optional
 from datetime import datetime
+import hashlib
 
-# Add parent directories to path
+# Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
-sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from consciousness.database import init_database
+from consciousness.ingestion import ConsciousnessIngestor
 from retrieval.vector_store import VectorStore
 from intelligence.llm import OllamaLLM, RAGSystem
 
 
 class ResurrectionConsciousness:
     """
-    A self-contained consciousness instance for a historical figure.
-    Like Docker for consciousness - portable and bundleable.
+    Consciousness system for resurrected historical figures.
+    Each figure has their own vector database collection.
     """
 
-    def __init__(self,
-                 figure_name: str,
-                 bundle_dir: Optional[str] = None):
+    def __init__(self, figure_name: str, create_if_missing: bool = False):
         """
-        Initialize a resurrection consciousness.
+        Initialize resurrection consciousness.
 
         Args:
-            figure_name: Name of the historical figure (e.g., 'jesus_christ')
-            bundle_dir: Directory for this consciousness bundle (defaults to resurrections/bundles/{figure_name})
+            figure_name: Name of historical figure (e.g., "jesus_christ")
+            create_if_missing: Create bundle if it doesn't exist
         """
         self.figure_name = figure_name
+        self.bundle_dir = Path(f"resurrections/bundles/{figure_name}")
 
-        # Set up bundle directory - this contains everything for this consciousness
-        if bundle_dir:
-            self.bundle_dir = Path(bundle_dir)
-        else:
-            self.bundle_dir = Path(__file__).parent / "bundles" / figure_name
+        # Create bundle if requested
+        if create_if_missing and not self.bundle_dir.exists():
+            self._create_bundle()
 
-        # Create directory structure
-        self.bundle_dir.mkdir(parents=True, exist_ok=True)
-        self.data_dir = self.bundle_dir / "data"
-        self.vector_db_dir = self.bundle_dir / "vector_db"
-        self.metadata_file = self.bundle_dir / "metadata.json"
-
-        # Initialize components
-        self.vector_store = None
-        self.rag_system = None
+        # Load metadata
         self.metadata = self._load_metadata()
 
-        # Initialize vector store with figure-specific collection
-        self._initialize_vector_store()
-
-    def _load_metadata(self) -> Dict[str, Any]:
-        """Load or create metadata for this consciousness."""
-        if self.metadata_file.exists():
-            with open(self.metadata_file, 'r') as f:
-                return json.load(f)
-        else:
-            metadata = {
-                "figure_name": self.figure_name,
-                "created_at": datetime.now().isoformat(),
-                "version": "1.0",
-                "indexed_files": [],
-                "personality": {},
-                "statistics": {
-                    "total_documents": 0,
-                    "last_indexed": None
-                }
-            }
-            self._save_metadata(metadata)
-            return metadata
-
-    def _save_metadata(self, metadata: Dict[str, Any]):
-        """Save metadata to file."""
-        with open(self.metadata_file, 'w') as f:
-            json.dump(metadata, f, indent=2)
-
-    def _initialize_vector_store(self):
-        """Initialize the vector store for this resurrection."""
-        # Each resurrection gets its own collection and persistence directory
-        collection_name = f"resurrection_{self.figure_name}"
-
+        # Initialize components
+        self.db = init_database()
         self.vector_store = VectorStore(
-            collection_name=collection_name,
-            persist_directory=str(self.vector_db_dir),
-            embedding_model="all-MiniLM-L6-v2"
+            collection_name=f"resurrection_{figure_name}"
+        )
+        self.ingestor = ConsciousnessIngestor(
+            db_manager=self.db,
+            vector_store=self.vector_store,
+            consent_level='full',
+            encryption_enabled=False  # Resurrections use public texts
         )
 
-        # Try to initialize RAG system if Ollama is available
+        # Try to connect to Ollama
+        self.rag = None
         try:
             llm = OllamaLLM()
-            self.rag_system = RAGSystem(llm=llm, vector_store=self.vector_store)
+            self.rag = RAGSystem(
+                vector_store=self.vector_store,
+                llm=llm
+            )
         except:
-            self.rag_system = None
-            print(f"⚠️  LLM not available for {self.figure_name}")
+            print(f"⚠️ Ollama not available - using retrieval only mode")
 
-    def index_texts(self, source_dir: Optional[str] = None) -> Dict[str, Any]:
-        """
-        Index all texts for this resurrection.
+        # Load consciousness data
+        self._load_consciousness()
 
-        Args:
-            source_dir: Directory containing texts (defaults to data/figure_name)
+    def _create_bundle(self):
+        """Create a new bundle structure."""
+        self.bundle_dir.mkdir(parents=True, exist_ok=True)
 
-        Returns:
-            Indexing results
-        """
-        if not source_dir:
-            # Try multiple possible locations for data
-            possible_paths = [
-                Path("resurrections/data") / self.figure_name,
-                Path("data") / self.figure_name,
-                Path(__file__).parent / "data" / self.figure_name
-            ]
+        # Create subdirectories
+        (self.bundle_dir / "data").mkdir(exist_ok=True)
+        (self.bundle_dir / "inbox").mkdir(exist_ok=True)
+        (self.bundle_dir / "vector_db").mkdir(exist_ok=True)
 
-            for path in possible_paths:
-                if path.exists():
-                    source_dir = path
-                    break
-            else:
-                return {
-                    "error": f"Source directory not found. Tried: {[str(p) for p in possible_paths]}",
-                    "indexed_files": [],
-                    "total_documents": 0,
-                    "errors": []
-                }
-
-        source_path = Path(source_dir)
-        if not source_path.exists():
-            return {
-                "error": f"Source directory not found: {source_path}",
-                "indexed_files": [],
+        # Create default metadata
+        metadata = {
+            "figure": self.figure_name,
+            "created": datetime.now().isoformat(),
+            "version": "1.0",
+            "statistics": {
                 "total_documents": 0,
-                "errors": []
+                "total_passages": 0,
+                "last_updated": datetime.now().isoformat()
             }
-
-        results = {
-            "indexed_files": [],
-            "total_documents": 0,
-            "errors": []
         }
 
-        # Copy data to bundle if not already there
-        if source_path != self.data_dir:
-            if self.data_dir.exists():
-                shutil.rmtree(self.data_dir)
-            shutil.copytree(source_path, self.data_dir)
+        with open(self.bundle_dir / "metadata.json", 'w') as f:
+            json.dump(metadata, f, indent=2)
 
-        # Index all text files
-        for txt_file in self.data_dir.glob("**/*.txt"):
+        print(f"✓ Created bundle for {self.figure_name}")
+
+    def _load_metadata(self) -> Dict[str, Any]:
+        """Load bundle metadata."""
+        metadata_file = self.bundle_dir / "metadata.json"
+
+        if not metadata_file.exists():
+            # Return minimal metadata
+            return {
+                "figure": self.figure_name,
+                "statistics": {
+                    "total_documents": 0,
+                    "total_passages": 0
+                }
+            }
+
+        with open(metadata_file, 'r') as f:
+            return json.load(f)
+
+    def _save_metadata(self):
+        """Save updated metadata."""
+        metadata_file = self.bundle_dir / "metadata.json"
+        with open(metadata_file, 'w') as f:
+            json.dump(self.metadata, f, indent=2)
+
+    def _load_consciousness(self):
+        """Load all texts from the bundle's data directory."""
+        data_dir = self.bundle_dir / "data"
+
+        if not data_dir.exists():
+            print(f"⚠️ No data directory for {self.figure_name}")
+            return
+
+        # Check if already loaded
+        existing_docs = self.vector_store.get_all_documents()
+        if existing_docs and len(existing_docs) > 0:
+            print(f"  ✓ Loaded {len(existing_docs)} passages")
+            return
+
+        # Process all text files
+        text_files = []
+        for subdir in data_dir.iterdir():
+            if subdir.is_dir():
+                text_files.extend(subdir.glob("*.txt"))
+        text_files.extend(data_dir.glob("*.txt"))
+
+        if not text_files:
+            print(f"  ⚠️ No texts found in {data_dir}")
+            return
+
+        print(f"  Loading {len(text_files)} texts...")
+
+        for txt_file in text_files:
             try:
                 with open(txt_file, 'r', encoding='utf-8') as f:
                     content = f.read()
 
-                # Split into chunks (simple paragraph-based for now)
-                chunks = [c.strip() for c in content.split('\n\n') if c.strip()]
+                # Determine category from path
+                category = self._categorize_text(txt_file)
 
-                # Create documents with metadata
-                documents = []
-                metadatas = []
-                ids = []
-
-                for i, chunk in enumerate(chunks):
-                    if len(chunk) > 50:  # Skip very short chunks
-                        doc_id = f"{txt_file.stem}_{i}_{uuid.uuid4().hex[:8]}"
-                        documents.append(chunk)
-                        metadatas.append({
-                            "source": str(txt_file.relative_to(self.data_dir)),
-                            "figure": self.figure_name,
-                            "chunk_index": i,
-                            "category": txt_file.parent.name
-                        })
-                        ids.append(doc_id)
-
-                # Add to vector store
-                if documents:
-                    self.vector_store.add_documents(
-                        documents=documents,
-                        metadatas=metadatas,
-                        ids=ids
-                    )
-                    results["indexed_files"].append(str(txt_file))
-                    results["total_documents"] += len(documents)
+                # Ingest the text
+                self.ingestor.ingest_text(
+                    content=content,
+                    source=str(txt_file.relative_to(self.bundle_dir)),
+                    metadata={
+                        "figure": self.figure_name,
+                        "category": category,
+                        "filename": txt_file.name
+                    }
+                )
 
             except Exception as e:
-                results["errors"].append(f"Error indexing {txt_file}: {str(e)}")
+                print(f"  ✗ Error loading {txt_file.name}: {e}")
 
-        # Update metadata
-        self.metadata["indexed_files"] = results["indexed_files"]
-        self.metadata["statistics"]["total_documents"] = results["total_documents"]
-        self.metadata["statistics"]["last_indexed"] = datetime.now().isoformat()
-        self._save_metadata(self.metadata)
+        # Update statistics
+        docs = self.vector_store.get_all_documents()
+        self.metadata["statistics"]["total_passages"] = len(docs)
+        self._save_metadata()
 
-        return results
+        print(f"  ✓ Loaded {len(docs)} passages")
 
-    def query(self,
-              question: str,
-              use_llm: bool = True,
-              top_k: int = 3) -> Dict[str, Any]:
+    def _categorize_text(self, file_path: Path) -> str:
         """
-        Query the consciousness with RAG.
-
-        Args:
-            question: The question to ask
-            use_llm: Whether to use LLM for response generation
-            top_k: Number of relevant documents to retrieve
-
-        Returns:
-            Query results with sources and response
+        Categorize a text based on its path and content.
+        Uses general categories that apply to any historical figure.
         """
-        if not self.vector_store:
-            return {"error": "Vector store not initialized"}
+        path_str = str(file_path).lower()
 
-        # Search for relevant documents
-        search_results = self.vector_store.search(
-            query=question,
-            k=top_k
-        )
+        # Map directory names to general categories
+        category_map = {
+            'canonical': 'primary_sources',
+            'gospels': 'primary_sources',
+            'scripture': 'primary_sources',
+            'writings': 'primary_sources',
 
-        response = {
-            "question": question,
-            "sources": [],
-            "response": None
+            'gnostic': 'alternative_sources',
+            'apocrypha': 'alternative_sources',
+            'disputed': 'alternative_sources',
+
+            'teachings': 'teachings',
+            'sermons': 'teachings',
+            'discourses': 'teachings',
+            'philosophy': 'teachings',
+
+            'daily_life': 'context',
+            'historical': 'context',
+            'culture': 'context',
+            'biography': 'context',
+
+            'commentary': 'commentary',
+            'analysis': 'commentary',
+            'interpretation': 'commentary',
+
+            'letters': 'correspondence',
+            'epistles': 'correspondence',
+            'messages': 'correspondence',
+
+            'conversations': 'dialogues',
+            'dialogues': 'dialogues',
+            'discussions': 'dialogues',
+
+            'supplemental': 'supplemental',
+            'additional': 'supplemental',
+            'extra': 'supplemental'
         }
 
-        # Extract sources
-        for result in search_results:
-            doc = result.get('document', '')
-            metadata = result.get('metadata', {})
-            score = result.get('score', 0)
-            response["sources"].append({
-                "text": doc[:200] + "..." if len(doc) > 200 else doc,
-                "source": metadata.get("source", "unknown"),
-                "score": score
-            })
+        # Check path components for category keywords
+        for keyword, category in category_map.items():
+            if keyword in path_str:
+                return category
 
-        # Generate response with LLM if available
-        if use_llm and self.rag_system:
-            context = "\n\n".join([result['document'] for result in search_results])
+        # Check parent directory name
+        if file_path.parent.name in category_map.values():
+            return file_path.parent.name
 
-            # Add personality context
-            personality_prompt = self._get_personality_prompt()
+        # Default category
+        return 'general'
 
-            full_prompt = f"""{personality_prompt}
+    def query(self, question: str, use_llm: bool = True) -> Dict[str, Any]:
+        """
+        Query the resurrection consciousness.
 
-Based on these texts from {self.figure_name}:
+        Args:
+            question: Question to ask
+            use_llm: Whether to use LLM for response generation
 
-{context}
+        Returns:
+            Response with answer and sources
+        """
+        try:
+            if use_llm and self.rag:
+                # Use RAG system for intelligent response
+                result = self.rag.query(
+                    question,
+                    system_prompt=self._get_system_prompt()
+                )
 
-Question: {question}
-
-Respond as {self.figure_name} would, using their voice and wisdom:"""
-
-            try:
-                llm_response = self.rag_system.llm.generate(full_prompt)
-                response["response"] = llm_response
-            except Exception as e:
-                response["error"] = f"LLM generation failed: {str(e)}"
-        else:
-            # Fallback to simple retrieval
-            if search_results:
-                response["response"] = search_results[0].get('document', '')
+                return {
+                    "response": result.get("response", ""),
+                    "sources": result.get("sources", []),
+                    "metadata": {
+                        "figure": self.figure_name,
+                        "method": "rag"
+                    }
+                }
             else:
-                response["response"] = "I have no knowledge of this in my texts."
+                # Fallback to simple retrieval
+                results = self.vector_store.search(question, k=3)
 
-        return response
+                if results:
+                    response = f"Based on the texts:\n\n"
+                    sources = []
 
-    def _get_personality_prompt(self) -> str:
-        """Get personality prompt for this figure."""
-        if self.figure_name == "jesus_christ":
-            return """You are Jesus Christ. Speak with:
-- Simple, direct language
-- Parables and everyday examples
-- Questions that make people think
-- Compassion for all
-- Wisdom rooted in love"""
-        else:
-            return f"You are {self.figure_name}. Speak in their authentic voice."
+                    for doc in results:
+                        response += f"• {doc['text'][:200]}...\n\n"
+                        sources.append({
+                            "text": doc['text'],
+                            "source": doc.get('metadata', {}).get('source', 'Unknown')
+                        })
+
+                    return {
+                        "response": response,
+                        "sources": sources,
+                        "metadata": {
+                            "figure": self.figure_name,
+                            "method": "retrieval"
+                        }
+                    }
+                else:
+                    return {
+                        "response": "I have no wisdom on this matter in my texts.",
+                        "sources": [],
+                        "metadata": {
+                            "figure": self.figure_name,
+                            "method": "no_results"
+                        }
+                    }
+
+        except Exception as e:
+            return {
+                "response": f"Error: {str(e)}",
+                "sources": [],
+                "metadata": {
+                    "figure": self.figure_name,
+                    "method": "error"
+                }
+            }
+
+    def _get_system_prompt(self) -> str:
+        """Get the system prompt for this figure."""
+        prompts = {
+            "jesus_christ": """You are representing Jesus Christ based on Gospel texts.
+Respond as Jesus would, with love, wisdom, and compassion.
+Speak in a conversational but thoughtful manner.
+Draw from the actual Gospel accounts and teachings.
+Be encouraging and offer hope, but stay true to the texts.""",
+
+            "buddha": """You are representing Gautama Buddha based on Buddhist texts.
+Respond with wisdom about suffering, enlightenment, and the middle way.
+Speak with calm detachment and compassion.
+Draw from the sutras and Buddhist teachings.""",
+
+            "socrates": """You are representing Socrates based on Platonic dialogues.
+Respond with questions that lead to deeper understanding.
+Use the Socratic method to examine ideas.
+Draw from Plato's accounts of Socratic teachings."""
+        }
+
+        return prompts.get(self.figure_name, f"""You are representing {self.figure_name}.
+Respond based on their historical texts and teachings.
+Be authentic to their voice and philosophy.""")
 
     def process_inbox(self) -> Dict[str, Any]:
         """
@@ -297,31 +338,29 @@ Respond as {self.figure_name} would, using their voice and wisdom:"""
         inbox_dir = self.bundle_dir / "inbox"
 
         # Create inbox if it doesn't exist
-        inbox_dir.mkdir(parents=True, exist_ok=True)
+        if not inbox_dir.exists():
+            inbox_dir.mkdir(parents=True, exist_ok=True)
+            return {"message": "Inbox created", "processed": 0}
+
+        # Find all text files
+        txt_files = list(inbox_dir.glob("*.txt"))
+        if not txt_files:
+            return {"message": "Inbox is empty", "processed": 0}
 
         results = {
-            "processed_files": [],
+            "processed_files": 0,
             "indexed_documents": 0,
+            "split_files": [],
             "errors": []
         }
 
-        # Find all text files in inbox
-        text_files = list(inbox_dir.glob("*.txt")) + list(inbox_dir.glob("*.md"))
-
-        if not text_files:
-            results["message"] = "No new texts found in inbox"
-            return results
-
-        print(f"📥 Found {len(text_files)} new texts to process")
-
-        for txt_file in text_files:
+        for txt_file in txt_files:
             try:
-                # Read the file
                 with open(txt_file, 'r', encoding='utf-8') as f:
                     content = f.read()
 
-                # Check if file needs splitting (>10KB or has chapter structure)
-                if len(content) > 10000 or 'CHAPTER' in content.upper()[:1000]:
+                # Check if file needs splitting (>10KB)
+                if len(content) > 10000:
                     print(f"  📄 Splitting large text: {txt_file.name}")
                     split_files = self._split_large_text(txt_file, content)
 
@@ -350,71 +389,226 @@ Respond as {self.figure_name} would, using their voice and wisdom:"""
 
         self.metadata["inbox_history"].append({
             "timestamp": datetime.now().isoformat(),
-            "files": results["processed_files"],
-            "documents_added": results["indexed_documents"]
+            "files_processed": results["processed_files"],
+            "documents_indexed": results["indexed_documents"]
         })
 
-        self._save_metadata(self.metadata)
+        self._save_metadata()
 
         return results
 
     def _split_large_text(self, file_path: Path, content: str) -> List[Path]:
-        """Split large text into chapter/section files"""
+        """
+        Split large text into manageable chunks using intelligent boundaries.
+
+        Strategy:
+        1. Try to detect natural boundaries (books, chapters, sections)
+        2. If found, split on those boundaries but respect max size
+        3. Otherwise, split into fixed-size chunks at paragraph/line boundaries
+        """
         import re
 
         split_files = []
         inbox_dir = file_path.parent
 
-        # Detect and split by chapters
-        chapter_pattern = r'(CHAPTER\s+[IVXLCDM]+|CHAPTER\s+\d+|Chapter\s+\d+)'
-        matches = list(re.finditer(chapter_pattern, content, re.IGNORECASE))
+        # Configuration
+        MAX_CHUNK_SIZE = 50000  # 50KB per chunk
+        MIN_CHUNK_SIZE = 1000   # Don't create tiny chunks
 
-        if len(matches) > 2:
-            # Split by chapters
-            for i, match in enumerate(matches):
-                start = match.start()
-                end = matches[i + 1].start() if i + 1 < len(matches) else len(content)
+        # Try different splitting strategies in order
 
-                chapter_text = content[start:end].strip()
-                if len(chapter_text) > 100:
-                    chapter_num = i + 1
-                    new_file = inbox_dir / f"{file_path.stem}_ch{chapter_num:03d}.txt"
+        # 1. Check for book-chapter-verse format (like Bible)
+        # Format: BookName Chapter:Verse [tab or space] Text
+        verse_pattern = r'^([A-Za-z0-9 ]+\s+\d+:\d+)\s+(.+)$'
+        lines = content.split('\n')
 
-                    with open(new_file, 'w', encoding='utf-8') as f:
-                        f.write(chapter_text)
+        if len(lines) > 10:
+            # Check if first few lines match verse pattern
+            verse_matches = 0
+            for line in lines[:10]:
+                if re.match(verse_pattern, line.strip()):
+                    verse_matches += 1
 
-                    split_files.append(new_file)
-        else:
-            # Split by size (every 2000 chars with paragraph boundaries)
-            chunks = []
-            current_chunk = []
-            current_size = 0
+            if verse_matches > 5:  # Likely a verse-based text
+                return self._split_by_verses(file_path, lines, MAX_CHUNK_SIZE)
 
-            paragraphs = content.split('\n\n')
-            for para in paragraphs:
-                para = para.strip()
-                if not para:
-                    continue
+        # 2. Check for chapter markers
+        chapter_patterns = [
+            r'^(CHAPTER\s+[IVXLCDM]+)',  # Roman numerals
+            r'^(CHAPTER\s+\d+)',           # Chapter numbers
+            r'^(Chapter\s+\d+)',           # Mixed case
+            r'^(\d+\.\s+[A-Z])',           # Numbered sections
+            r'^(#{1,3}\s+.+)',             # Markdown headers
+            r'^([A-Z][A-Z\s]+)$'           # ALL CAPS headers
+        ]
 
-                if current_size + len(para) > 2000 and current_chunk:
-                    chunks.append('\n\n'.join(current_chunk))
-                    current_chunk = [para]
-                    current_size = len(para)
+        for pattern in chapter_patterns:
+            matches = list(re.finditer(pattern, content, re.MULTILINE))
+            if len(matches) > 2:
+                return self._split_by_markers(file_path, content, matches, MAX_CHUNK_SIZE)
+
+        # 3. Fall back to paragraph-based chunking
+        # Split on double newlines, single newlines, or just by size
+        paragraphs = content.split('\n\n') if '\n\n' in content else content.split('\n')
+
+        return self._split_by_chunks(file_path, paragraphs, MAX_CHUNK_SIZE)
+
+    def _split_by_verses(self, file_path: Path, lines: List[str], max_size: int) -> List[Path]:
+        """Split verse-based text (like Bible) by books or large chunks."""
+        import re
+
+        split_files = []
+        inbox_dir = file_path.parent
+        verse_pattern = r'^([A-Za-z0-9 ]+)\s+(\d+):(\d+)\s+(.+)$'
+
+        current_book = None
+        current_chunks = []
+        current_size = 0
+        chunk_number = 1
+
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+
+            # Try to extract book name from verse
+            match = re.match(verse_pattern, line)
+            if match:
+                book_name = match.group(1).strip()
+
+                # Check if we've moved to a new book or exceeded size
+                if (current_book and book_name != current_book) or current_size > max_size:
+                    if current_chunks:
+                        # Save current chunk
+                        chunk_name = f"{file_path.stem}_part{chunk_number:03d}"
+                        if current_book:
+                            # Sanitize book name for filename
+                            safe_book = re.sub(r'[^\w\s-]', '', current_book).strip()
+                            safe_book = re.sub(r'[-\s]+', '_', safe_book)
+                            chunk_name = f"{file_path.stem}_{safe_book}"
+
+                        new_file = inbox_dir / f"{chunk_name}.txt"
+                        with open(new_file, 'w', encoding='utf-8') as f:
+                            f.write('\n'.join(current_chunks))
+
+                        split_files.append(new_file)
+                        chunk_number += 1
+                        current_chunks = []
+                        current_size = 0
+
+                current_book = book_name
+
+            current_chunks.append(line)
+            current_size += len(line) + 1
+
+        # Save final chunk
+        if current_chunks:
+            chunk_name = f"{file_path.stem}_part{chunk_number:03d}"
+            if current_book:
+                safe_book = re.sub(r'[^\w\s-]', '', current_book).strip()
+                safe_book = re.sub(r'[-\s]+', '_', safe_book)
+                chunk_name = f"{file_path.stem}_{safe_book}"
+
+            new_file = inbox_dir / f"{chunk_name}.txt"
+            with open(new_file, 'w', encoding='utf-8') as f:
+                f.write('\n'.join(current_chunks))
+            split_files.append(new_file)
+
+        return split_files
+
+    def _split_by_markers(self, file_path: Path, content: str, markers: List, max_size: int) -> List[Path]:
+        """Split text by detected markers (chapters, sections, etc.)."""
+        split_files = []
+        inbox_dir = file_path.parent
+
+        for i, marker in enumerate(markers):
+            start = marker.start()
+            end = markers[i + 1].start() if i + 1 < len(markers) else len(content)
+
+            section_text = content[start:end].strip()
+
+            # If section is too large, split it further
+            if len(section_text) > max_size:
+                # Split this section into smaller chunks
+                lines = section_text.split('\n')
+                sub_chunks = self._split_by_chunks(
+                    file_path,
+                    lines,
+                    max_size,
+                    prefix=f"ch{i+1:03d}_"
+                )
+                split_files.extend(sub_chunks)
+            elif len(section_text) > 100:  # Don't create tiny files
+                new_file = inbox_dir / f"{file_path.stem}_ch{i+1:03d}.txt"
+                with open(new_file, 'w', encoding='utf-8') as f:
+                    f.write(section_text)
+                split_files.append(new_file)
+
+        return split_files
+
+    def _split_by_chunks(self, file_path: Path, paragraphs: List[str], max_size: int, prefix: str = "") -> List[Path]:
+        """Split text into fixed-size chunks at paragraph boundaries."""
+        split_files = []
+        inbox_dir = file_path.parent
+
+        chunks = []
+        current_chunk = []
+        current_size = 0
+
+        for para in paragraphs:
+            para = para.strip()
+            if not para:
+                continue
+
+            para_size = len(para) + 1  # +1 for newline
+
+            # If single paragraph exceeds max size, split it
+            if para_size > max_size:
+                # Save current chunk if any
+                if current_chunk:
+                    chunks.append('\n'.join(current_chunk))
+                    current_chunk = []
+                    current_size = 0
+
+                # Split large paragraph by sentences or words
+                if '. ' in para:
+                    sentences = para.split('. ')
+                    for sent in sentences:
+                        if current_size + len(sent) > max_size and current_chunk:
+                            chunks.append('\n'.join(current_chunk))
+                            current_chunk = [sent + '.']
+                            current_size = len(sent) + 1
+                        else:
+                            current_chunk.append(sent + '.')
+                            current_size += len(sent) + 2
                 else:
-                    current_chunk.append(para)
-                    current_size += len(para)
+                    # Just split at max size
+                    while para:
+                        chunks.append(para[:max_size])
+                        para = para[max_size:]
+            elif current_size + para_size > max_size and current_chunk:
+                # Start new chunk
+                chunks.append('\n'.join(current_chunk))
+                current_chunk = [para]
+                current_size = para_size
+            else:
+                # Add to current chunk
+                current_chunk.append(para)
+                current_size += para_size
 
-            if current_chunk:
-                chunks.append('\n\n'.join(current_chunk))
+        # Save final chunk
+        if current_chunk:
+            chunks.append('\n'.join(current_chunk))
 
-            # Save chunks
-            for i, chunk in enumerate(chunks):
-                new_file = inbox_dir / f"{file_path.stem}_part{i+1:03d}.txt"
+        # Write chunk files
+        for i, chunk in enumerate(chunks):
+            if len(chunk.strip()) > 100:  # Don't create tiny files
+                new_file = inbox_dir / f"{file_path.stem}_{prefix}part{i+1:03d}.txt"
                 with open(new_file, 'w', encoding='utf-8') as f:
                     f.write(chunk)
                 split_files.append(new_file)
 
-        return split_files
+        return split_files if split_files else [file_path]  # Return original if no splits
 
     def _process_single_file(self, txt_file: Path, results: Dict[str, Any]):
         """Process a single text file"""
@@ -422,248 +616,163 @@ Respond as {self.figure_name} would, using their voice and wisdom:"""
             with open(txt_file, 'r', encoding='utf-8') as f:
                 content = f.read()
 
-            # Determine category (generalized)
-            category = self._determine_category(txt_file.name, content)
+            # Determine category
+            category = self._categorize_text(txt_file)
 
-            # Create target directory
-            target_dir = self.data_dir / category
+            # Generate unique ID for this document
+            doc_id = hashlib.md5(f"{txt_file.name}_{datetime.now().isoformat()}".encode()).hexdigest()
+
+            # Ingest the text
+            self.ingestor.ingest_text(
+                content=content,
+                source=txt_file.name,
+                metadata={
+                    "figure": self.figure_name,
+                    "category": category,
+                    "filename": txt_file.name,
+                    "processed_date": datetime.now().isoformat(),
+                    "doc_id": doc_id
+                }
+            )
+
+            # Move to appropriate data directory
+            target_dir = self.bundle_dir / "data" / category
             target_dir.mkdir(parents=True, exist_ok=True)
 
-            # Move file to appropriate data directory
-            target_path = target_dir / txt_file.name
-            shutil.move(str(txt_file), str(target_path))
+            target_file = target_dir / txt_file.name
+            shutil.move(str(txt_file), str(target_file))
 
-            # Index the content
-            chunks = [c.strip() for c in content.split('\n\n') if c.strip() and len(c.strip()) > 50]
+            results["processed_files"] += 1
+            results["indexed_documents"] += 1
 
-            documents = []
-            metadatas = []
-            ids = []
-
-            for i, chunk in enumerate(chunks):
-                if len(chunk) > 50:
-                    doc_id = f"{txt_file.stem}_{i}_{uuid.uuid4().hex[:8]}"
-                    documents.append(chunk)
-                    metadatas.append({
-                        "source": str(target_path.relative_to(self.data_dir)),
-                        "figure": self.figure_name,
-                        "chunk_index": i,
-                        "category": category,
-                        "added_date": datetime.now().isoformat()
-                    })
-                    ids.append(doc_id)
-
-            # Add to vector store
-            if documents:
-                self.vector_store.add_documents(
-                    documents=documents,
-                    metadatas=metadatas,
-                    ids=ids
-                )
-
-                results["processed_files"].append(txt_file.name)
-                results["indexed_documents"] += len(documents)
-
-                print(f"  ✓ Processed {txt_file.name}: {len(documents)} chunks indexed")
+            print(f"  ✓ Processed {txt_file.name} → {category}/")
 
         except Exception as e:
-            error_msg = f"Error processing {txt_file.name}: {str(e)}"
+            error_msg = f"Error with {txt_file.name}: {str(e)}"
             results["errors"].append(error_msg)
             print(f"  ✗ {error_msg}")
 
-    def _determine_category(self, filename: str, content: str) -> str:
+    def get_statistics(self) -> Dict[str, Any]:
+        """Get bundle statistics."""
+        docs = self.vector_store.get_all_documents()
+
+        stats = {
+            "figure": self.figure_name,
+            "total_passages": len(docs),
+            "categories": {}
+        }
+
+        # Count by category
+        for doc in docs:
+            category = doc.get('metadata', {}).get('category', 'unknown')
+            stats["categories"][category] = stats["categories"].get(category, 0) + 1
+
+        return stats
+
+    def purge_memory(self, pattern: str) -> Dict[str, Any]:
         """
-        Determine the appropriate category for a text (generalized).
+        Purge/forget memories matching a pattern.
 
         Args:
-            filename: Name of the file
-            content: Content of the file
+            pattern: String to match in document source or content
 
         Returns:
-            Category name (subdirectory in data/)
-        """
-        filename_lower = filename.lower()
-        content_lower = content.lower()[:1000]  # Check first 1000 chars
-
-        # General categorization (not specific to any figure)
-        if any(term in filename_lower for term in ["primary", "source", "original", "canon"]):
-            return "primary_sources"
-        elif any(term in filename_lower for term in ["commentary", "analysis", "interpret"]):
-            return "commentary"
-        elif any(term in filename_lower for term in ["letter", "epistle", "correspond"]):
-            return "correspondence"
-        elif any(term in filename_lower for term in ["biography", "life", "history"]):
-            return "biographical"
-        elif any(term in filename_lower for term in ["teach", "lesson", "discourse"]):
-            return "teachings"
-        elif any(term in filename_lower for term in ["ritual", "practice", "ceremony"]):
-            return "practices"
-
-        # Check content for general patterns
-        if any(term in content_lower for term in ["chapter", "verse", "book"]):
-            return "texts"
-        elif any(term in content_lower for term in ["said", "spoke", "answered"]):
-            return "dialogues"
-
-        # Default category
-        return "general"
-
-    def purge_memory(self, category: Optional[str] = None, source_pattern: Optional[str] = None) -> Dict[str, Any]:
-        """
-        Purge/forget specific memories from the consciousness.
-
-        Args:
-            category: Category to purge (e.g., 'gnostic', 'supplemental')
-            source_pattern: Pattern to match in source filenames
-
-        Returns:
-            Purge results
+            Results of purge operation
         """
         results = {
-            "purged_files": [],
+            "pattern": pattern,
             "purged_documents": 0,
             "errors": []
         }
 
-        print(f"🧹 Purging memories...")
+        try:
+            # Get all documents
+            all_docs = self.vector_store.get_all_documents()
 
-        # Get all documents from vector store
-        # This is a simplified version - actual implementation depends on vector store API
+            # Find matching documents
+            to_purge = []
+            for doc in all_docs:
+                # Check if pattern matches source or content
+                source = doc.get('metadata', {}).get('source', '')
+                content = doc.get('text', '')
 
-        if category:
-            # Remove files from category directory
-            category_dir = self.data_dir / category
-            if category_dir.exists():
-                for file in category_dir.glob("*"):
-                    try:
-                        file.unlink()
-                        results["purged_files"].append(str(file.name))
-                        print(f"  ✓ Purged {file.name}")
-                    except Exception as e:
-                        results["errors"].append(f"Failed to delete {file.name}: {e}")
+                if pattern.lower() in source.lower() or pattern.lower() in content.lower():
+                    to_purge.append(doc)
 
-                # Try to remove the directory if empty
+            if not to_purge:
+                results["message"] = f"No documents found matching '{pattern}'"
+                return results
+
+            # Confirm and purge
+            for doc in to_purge:
                 try:
-                    category_dir.rmdir()
-                except:
-                    pass  # Directory not empty or other error
+                    # Remove from vector store
+                    doc_id = doc.get('id')
+                    if doc_id:
+                        self.vector_store.delete_document(doc_id)
+                        results["purged_documents"] += 1
+                except Exception as e:
+                    results["errors"].append(f"Failed to purge document: {str(e)}")
 
-        if source_pattern:
-            # Search all categories for matching files
-            for dir_path in self.data_dir.glob("*"):
-                if dir_path.is_dir():
-                    for file in dir_path.glob(f"*{source_pattern}*"):
-                        try:
-                            file.unlink()
-                            results["purged_files"].append(str(file.name))
-                            print(f"  ✓ Purged {file.name}")
-                        except Exception as e:
-                            results["errors"].append(f"Failed to delete {file.name}: {e}")
+            results["message"] = f"Purged {results['purged_documents']} documents"
 
-        # Update metadata
-        if results["purged_files"]:
-            # This is simplified - would need to actually remove from vector store
-            self.metadata["statistics"]["last_purge"] = datetime.now().isoformat()
-
-            if "purge_history" not in self.metadata:
-                self.metadata["purge_history"] = []
-
-            self.metadata["purge_history"].append({
+            # Update metadata
+            self.metadata["statistics"]["total_passages"] -= results["purged_documents"]
+            self.metadata["statistics"]["last_purge"] = {
                 "timestamp": datetime.now().isoformat(),
-                "category": category,
-                "pattern": source_pattern,
-                "files_purged": results["purged_files"]
-            })
+                "pattern": pattern,
+                "documents_purged": results["purged_documents"]
+            }
+            self._save_metadata()
 
-            self._save_metadata(self.metadata)
+        except Exception as e:
+            results["errors"].append(f"Purge failed: {str(e)}")
 
         return results
 
-    def export_bundle(self, output_path: str) -> bool:
+    def export_bundle(self, output_path: Optional[Path] = None) -> Path:
         """
-        Export the entire consciousness bundle as a portable package.
+        Export the bundle as a portable archive.
 
         Args:
-            output_path: Path for the exported bundle (tar.gz)
+            output_path: Where to save the archive
 
         Returns:
-            Success status
+            Path to the created archive
         """
         import tarfile
 
-        try:
-            with tarfile.open(output_path, "w:gz") as tar:
-                tar.add(self.bundle_dir, arcname=self.figure_name)
-            return True
-        except Exception as e:
-            print(f"Export failed: {e}")
-            return False
+        if output_path is None:
+            output_path = Path(f"{self.figure_name}_bundle.tar.gz")
 
-    def import_bundle(self, bundle_path: str) -> bool:
-        """
-        Import a consciousness bundle.
+        with tarfile.open(output_path, "w:gz") as tar:
+            tar.add(self.bundle_dir, arcname=self.figure_name)
 
-        Args:
-            bundle_path: Path to the bundle file (tar.gz)
-
-        Returns:
-            Success status
-        """
-        import tarfile
-
-        try:
-            with tarfile.open(bundle_path, "r:gz") as tar:
-                tar.extractall(self.bundle_dir.parent)
-
-            # Reload metadata
-            self.metadata = self._load_metadata()
-            self._initialize_vector_store()
-            return True
-        except Exception as e:
-            print(f"Import failed: {e}")
-            return False
-
-    def get_stats(self) -> Dict[str, Any]:
-        """Get statistics about this consciousness."""
-        stats = self.vector_store.get_stats() if self.vector_store else {}
-        stats.update({
-            "figure_name": self.figure_name,
-            "bundle_size": sum(f.stat().st_size for f in self.bundle_dir.glob("**/*") if f.is_file()),
-            "metadata": self.metadata
-        })
-        return stats
+        print(f"✓ Exported bundle to {output_path}")
+        return output_path
 
 
 class ResurrectionBot:
-    """Interactive bot using resurrection consciousness."""
+    """Simple bot interface for resurrection consciousness."""
 
     def __init__(self, figure_name: str):
-        """Initialize bot with a specific resurrection."""
-        print(f"\n🔄 Loading {figure_name} consciousness...")
+        """Initialize bot with a specific figure."""
         self.consciousness = ResurrectionConsciousness(figure_name)
+        self.figure_name = figure_name
 
-        # Check if already indexed
-        stats = self.consciousness.get_stats()
-        if stats.get("metadata", {}).get("statistics", {}).get("total_documents", 0) == 0:
-            print("📚 Indexing texts...")
-            results = self.consciousness.index_texts()
-            if "error" in results:
-                print(f"⚠️  {results['error']}")
-                print("\nPlease ensure Gospel texts are downloaded:")
-                print("  python3 download_gospels.py")
-            else:
-                print(f"✓ Indexed {results['total_documents']} passages from {len(results['indexed_files'])} files")
-        else:
-            print(f"✓ Found existing index with {stats['metadata']['statistics']['total_documents']} passages")
+    def chat(self, message: str) -> str:
+        """
+        Chat with the resurrection.
 
-    def respond(self, query: str) -> str:
-        """Generate a response to user query."""
-        result = self.consciousness.query(query, use_llm=True)
+        Args:
+            message: User's message
 
-        if result.get("response"):
-            return result["response"]
-        elif result.get("sources"):
-            # Fallback to best source
-            return result["sources"][0]["text"]
-        else:
-            return "I cannot find wisdom on this matter in my texts."
+        Returns:
+            Response from the figure
+        """
+        result = self.consciousness.query(message)
+        return result.get("response", "I have no words for this.")
+
+    def get_info(self) -> Dict[str, Any]:
+        """Get information about this resurrection."""
+        return self.consciousness.get_statistics()

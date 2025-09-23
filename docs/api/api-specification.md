@@ -26,7 +26,7 @@ The C.H.R.I.S.T. system uses a modular API architecture where each component exp
 
 ```
 Development: http://localhost:8000/api/v1
-Production: https://api.christ.ai/v1
+Production: https://api.christs.ai/v1
 ```
 
 ## Authentication
@@ -634,7 +634,7 @@ For real-time communication and streaming responses.
 
 ### Connection
 ```javascript
-const ws = new WebSocket('wss://api.christ.ai/v1/stream');
+const ws = new WebSocket('wss://api.christs.ai/v1/stream');
 
 ws.onopen = () => {
   ws.send(JSON.stringify({
@@ -804,16 +804,16 @@ const searchResults = await client.retrieval.search({
 
 ### Test Environment
 ```
-Base URL: https://sandbox.christ.ai/v1
+Base URL: https://sandbox.christs.ai/v1
 Test API Key: test_key_xxxxx
 ```
 
 ### Postman Collection
-Available at: https://christ.ai/api/postman-collection.json
+Available at: https://christs.ai/api/postman-collection.json
 
 ### Example cURL
 ```bash
-curl -X POST https://api.christ.ai/v1/retrieval/search \
+curl -X POST https://api.christs.ai/v1/retrieval/search \
   -H "Authorization: Bearer your_token" \
   -H "Content-Type: application/json" \
   -d '{
@@ -847,7 +847,7 @@ API versions are included in the URL path:
 
 ### CORS Policy
 ```http
-Access-Control-Allow-Origin: https://app.christ.ai
+Access-Control-Allow-Origin: https://app.christs.ai
 Access-Control-Allow-Methods: GET, POST, PUT, DELETE
 Access-Control-Allow-Headers: Content-Type, Authorization
 ```

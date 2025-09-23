@@ -1,0 +1,86 @@
+.nav-search-1 .search-activated.nav-search .search-field.nav-search {
+      width: calc(100% - 28px);
+      height: 100%;
+      padding-left: 0;
+      font-size: 1.4rem;
+      text-align: left;
+    }
+
+.nav-search-1 .search-activated.nav-search .search.nav-search svg.nav-search {
+      width: 2.8rem;
+      height: 2.8rem;
+    }
+
+}
+</style><!-- Shady DOM styles for media-button -->
+<style scope="media-button-1">
+  .media-button-1 a.media-button {
+    display: inline-block;
+    text-decoration: none;
+  }
+
+.media-button-1 .menu-item.media-button {
+    display: inline-block;
+    width: 100%;
+    padding: 0;
+    font-size: 1.6rem;
+    text-align: left;
+    background: transparent;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+  }
+
+.media-button-1 .menu-item.media-button:focus {
+    outline: none;
+  }
+
+.media-button-1 .label.media-button {
+    display: inline-block;
+    padding: 0;
+    font-weight: 400;
+    color: #fff;
+    text-align: left;
+    vertical-align: middle;
+  }
+
+.media-button-1 .menu-item.media-button>.icon.media-button {
+    display: inline-flex;
+    vertical-align: middle;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+  }
+
+.media-button-1 .menu-item.media-button>.icon.media-button>svg.media-button {
+    height: 4rem;
+    width: 4rem;
+  }
+
+.media-button-1 .menu-item.selected.media-button .icon.media-button {
+    background-color: #333;
+    border-radius: 1rem 0 0 1rem;
+  }
+
+.media-button-1 .icon.media-button .fill-color.media-button {
+    fill: #999;
+  }
+
+.media-button-1 .icon.active.media-button .fill-color.media-button {
+    fill: #fff;
+  }
+
+.media-button-1 .donate.media-button .fill-color.media-button {
+    fill: #f00;
+  }
+
+@media (min-width: 890px) {
+    .media-button-1 .menu-item.media-button {
+      width: auto;
+      height: 5rem;
+      color: #999;
+      display: inline-flex;
+    }

@@ -1,0 +1,86 @@
+.nav-search-1 .search-activated.nav-search .highlight.nav-search,
+  .nav-search-1 .search-activated.nav-search .search.nav-search {
+    background: #fff;
+    border-radius: 0.5rem;
+  }
+
+.nav-search-1 .search-activated.nav-search .highlight.nav-search {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    width: 100%;
+    margin: 0 0.5rem;
+  }
+
+.nav-search-1 .search-activated.nav-search .search.nav-search {
+    height: 100%;
+    padding: 0;
+    margin-right: 0;
+    -ms-flex-item-align: center;
+    -ms-grid-row-align: center;
+    align-self: center;
+  }
+
+.nav-search-1 .search-activated.nav-search .search.nav-search svg.nav-search {
+    height: 3rem;
+    width: 3rem;
+  }
+
+.nav-search-1 .search-activated.nav-search .search-field.nav-search {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding-left: 1rem;
+    border-radius: 0.5rem;
+    border: none;
+    font-size: 1.6rem;
+    text-align: center;
+  }
+
+.nav-search-1 .search-activated.nav-search .search-field.nav-search:focus {
+    outline: none;
+  }
+
+@keyframes fade-in-nav-search-1 {
+    0% {
+      opacity: 0;
+    }
+
+100% {
+      opacity: 1;
+    }
+
+}
+
+.nav-search-1 .fade-in.nav-search {
+    animation: fade-in-nav-search-1 0.2s forwards;
+  }
+
+@media (min-width: 890px) {
+    .nav-search-1 .search.nav-search svg.nav-search {
+      display: inline;
+      width: 2.8rem;
+      height: 2.8rem;
+      vertical-align: -14px;
+    }
+
+.nav-search-1 .search.nav-search path.nav-search {
+      fill: #333;
+    }
+
+.nav-search-1 .search-inactive.nav-search,
+    .nav-search-1 .search-activated.nav-search {
+      display: block;
+      position: static;
+      padding: 1.1rem 0.2rem;
+      background: transparent;
+    }
+
+.nav-search-1 .search-activated.nav-search .highlight.nav-search {
+      width: 13rem;
+      height: 2.8rem;
+      -webkit-box-orient: horizontal;
+      -webkit-box-direction: reverse;
+      -ms-flex-direction: row-reverse;
+      flex-direction: row-reverse;
+    }

@@ -3,7 +3,6 @@ Resurrections: Digital consciousness representations of historical figures.
 Rooted in agape (unconditional love) and their authentic teachings.
 """
 
-from .resurrection import Resurrection, ResurrectionBot
-from .jesus import JesusChrist
+from .resurrection_consciousness import ResurrectionConsciousness, ResurrectionBot
 
-__all__ = ['Resurrection', 'ResurrectionBot', 'JesusChrist']
+__all__ = ['ResurrectionConsciousness', 'ResurrectionBot']

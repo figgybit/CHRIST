@@ -1,0 +1,80 @@
+@media (max-width: 889px) {
+    .media-slider-1 .overflow-clip.open.media-slider {
+      display: block;
+      height: 35.8rem;
+      left: 4rem;
+      top: 0;
+    }
+
+}
+
+@media (min-width: 890px) {
+    .media-slider-1 .overflow-clip.media-slider {
+      display: block;
+    }
+
+.media-slider-1 .information-menu.media-slider {
+      left: 0;
+      z-index: 3;
+      height: auto;
+      min-height: 21rem;
+      background: #474747;
+      transform: translate(0, -100%);
+      transition: transform 0.2s ease;
+    }
+
+.media-slider-1 .overflow-clip.open.media-slider {
+      height: 22rem;
+    }
+
+.media-slider-1 .information-menu.open.media-slider {
+      transform: translate(0, 0);
+    }
+
+.media-slider-1 .info-box.media-slider {
+      max-width: 100rem;
+      padding: 1.5rem 0;
+      margin: 0 auto;
+    }
+
+}
+</style><!-- Shady DOM styles for desktop-subnav -->
+<style scope="desktop-subnav-1">
+  .desktop-subnav-1 ul.desktop-subnav {
+    position: relative;
+    z-index: 3;
+    padding: .8rem 0;
+    margin: 0;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    text-align: center;
+    background: #333;
+  }
+
+.desktop-subnav-1 li.desktop-subnav {
+    display: inline-block;
+    padding: 0 15px;
+  }
+
+.desktop-subnav-1 a.desktop-subnav {
+    text-decoration: none;
+    color: #aaa;
+  }
+
+.desktop-subnav-1 a.desktop-subnav:hover,
+  .desktop-subnav-1 a.desktop-subnav:active,
+  .desktop-subnav-1 a.desktop-subnav:focus {
+    color: #fff;
+  }
+
+.desktop-subnav-1 .donate.desktop-subnav svg.desktop-subnav {
+    width: 1.6rem;
+    height: 1.6rem;
+    vertical-align: top;
+    fill: #f00;
+  }
+</style><!-- Shady DOM styles for signed-out-dropdown -->
+<style scope="signed-out-dropdown-1">
+  .signed-out-dropdown-1 .nav-container.signed-out-dropdown {
+    position: relative;
+  }

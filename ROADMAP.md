@@ -381,8 +381,8 @@ Build an open-source consciousness capture and emulation system that preserves h
 ## Contact
 
 **Project Lead**: [TBD]
-**Security Issues**: security@christproject.org
-**General Inquiries**: hello@christproject.org
+**Security Issues**: security@christs.ai
+**General Inquiries**: hello@christs.ai
 
 ---
 

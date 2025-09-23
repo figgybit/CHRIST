@@ -1,0 +1,83 @@
+@media (min-width: 890px) {
+    .media-subnav-1 {
+      display: -ms-grid;
+      display: grid;
+      -ms-grid-columns: 40% 20% 40%;
+      grid-template-columns: 40% 20% 40%;
+    }
+
+.media-subnav-1 .wayback-search.media-subnav {
+      -ms-grid-column: 1;
+      -ms-grid-column-span: 3;
+      grid-column: 1 / 4;
+    }
+
+.media-subnav-1 h3.media-subnav {
+      display: none;
+    }
+
+.media-subnav-1 .icon-links.media-subnav {
+      -ms-grid-column: 1;
+    }
+
+.media-subnav-1 .icon-links.media-subnav a.media-subnav {
+      padding-top: 3.5rem;
+      max-width: 16rem;
+    }
+
+.media-subnav-1 .links.media-subnav {
+      padding: 0 1.5rem;
+    }
+
+.media-subnav-1 .featured.media-subnav {
+      -ms-grid-column: 2;
+    }
+
+.media-subnav-1 .featured.media-subnav h4.media-subnav {
+      display: block;
+    }
+
+.media-subnav-1 .top.media-subnav {
+      -ms-grid-column: 3;
+    }
+
+.media-subnav-1 .top.media-subnav ul.media-subnav {
+      display: -ms-grid;
+      display: grid;
+      -ms-grid-columns: 50% 3rem 50%;
+      grid-template-columns: 50% 50%;
+      -ms-grid-rows: (auto)[7];
+      grid-template-rows: repeat(7, auto);
+      grid-column-gap: 3rem;
+      grid-auto-flow: column;
+    }
+
+.media-subnav-1 .top.media-subnav ul.media-subnav>*.media-subnav:nth-child(1) {
+      -ms-grid-row: 1;
+      -ms-grid-column: 1;
+    }
+
+.media-subnav-1 .top.media-subnav ul.media-subnav>*.media-subnav:nth-child(2) {
+      -ms-grid-row: 2;
+      -ms-grid-column: 1;
+    }
+
+.media-subnav-1 .top.media-subnav ul.media-subnav>*.media-subnav:nth-child(3) {
+      -ms-grid-row: 3;
+      -ms-grid-column: 1;
+    }
+
+.media-subnav-1 .top.media-subnav ul.media-subnav>*.media-subnav:nth-child(4) {
+      -ms-grid-row: 4;
+      -ms-grid-column: 1;
+    }
+
+.media-subnav-1 .top.media-subnav ul.media-subnav>*.media-subnav:nth-child(5) {
+      -ms-grid-row: 5;
+      -ms-grid-column: 1;
+    }
+
+.media-subnav-1 .top.media-subnav ul.media-subnav>*.media-subnav:nth-child(6) {
+      -ms-grid-row: 6;
+      -ms-grid-column: 1;
+    }

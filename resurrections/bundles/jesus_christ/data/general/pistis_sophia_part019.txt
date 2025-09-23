@@ -1,0 +1,81 @@
+.media-subnav-1 .top.media-subnav ul.media-subnav>*.media-subnav:nth-child(7) {
+      -ms-grid-row: 7;
+      -ms-grid-column: 1;
+    }
+
+.media-subnav-1 .top.media-subnav ul.media-subnav>*.media-subnav:nth-child(8) {
+      -ms-grid-row: 1;
+      -ms-grid-column: 3;
+    }
+
+.media-subnav-1 .top.media-subnav ul.media-subnav>*.media-subnav:nth-child(9) {
+      -ms-grid-row: 2;
+      -ms-grid-column: 3;
+    }
+
+.media-subnav-1 .top.media-subnav ul.media-subnav>*.media-subnav:nth-child(10) {
+      -ms-grid-row: 3;
+      -ms-grid-column: 3;
+    }
+
+.media-subnav-1 .top.media-subnav ul.media-subnav>*.media-subnav:nth-child(11) {
+      -ms-grid-row: 4;
+      -ms-grid-column: 3;
+    }
+
+.media-subnav-1 .top.media-subnav ul.media-subnav>*.media-subnav:nth-child(12) {
+      -ms-grid-row: 5;
+      -ms-grid-column: 3;
+    }
+
+.media-subnav-1 .top.media-subnav ul.media-subnav>*.media-subnav:nth-child(13) {
+      -ms-grid-row: 6;
+      -ms-grid-column: 3;
+    }
+
+.media-subnav-1 .top.media-subnav ul.media-subnav>*.media-subnav:nth-child(14) {
+      -ms-grid-row: 7;
+      -ms-grid-column: 3;
+    }
+
+}
+</style><!-- Shady DOM styles for media-slider -->
+<style scope="media-slider-1">
+  .media-slider-1 .media-slider-container.media-slider {
+    position: relative;
+  }
+
+.media-slider-1 .overflow-clip.media-slider {
+    display: none;
+    position: absolute;
+    top: 3rem;
+    right: 0;
+    left: 0;
+    height: 0;
+    overflow: hidden;
+    transition: height 0.2s ease;
+  }
+
+.media-slider-1 .information-menu.media-slider {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    padding: 0;
+    height: 31.9rem;
+    overflow-x: hidden;
+    font-size: 1.4rem;
+    background: #333;
+  }
+
+.media-slider-1 .open.media-slider {
+    display: block;
+  }
+
+.media-slider-1 .hidden.media-slider {
+    display: none;
+  }
+
+.media-slider-1 .info-box.media-slider {
+    padding: 1rem;
+  }

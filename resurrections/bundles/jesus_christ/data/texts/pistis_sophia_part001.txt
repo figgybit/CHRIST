@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- __ _ _ _ __| |_ (_)__ _____
+    / _` | '_/ _| ' \| |\ V / -_)
+    \__,_|_| \__|_||_|_| \_/\___| -->
+  <head data-release=81866908 data-node="www20.us.archive.org">
+    <title>Full text of &quot;Pistis Sophia; a Gnostic gospel (with extracts from the books of the Saviour appended) originally tr. from Greek into Coptic and now for the first time Englished from Schwartze's Latin version of the only known Coptic ms. and checked by Amélineau's French version with an introduction by G.R.S. Mead ..&quot;</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    
+        <meta name="google-site-verification" content="Q2YSouphkkgHkFNP7FgAkc4TmBs1Gmag3uGNndb53B8" />
+    <meta name="google-site-verification" content="bpjKvUvsX0lxfmjg19TLblckWkDpnptZEYsBntApxUk" />

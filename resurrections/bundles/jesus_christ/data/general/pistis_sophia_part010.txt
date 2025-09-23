@@ -1,0 +1,99 @@
+.primary-nav-1 .sr-only.primary-nav {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    clip: rect(1px, 1px, 1px, 1px);
+    -webkit-clip-path: inset(50%);
+    clip-path: inset(50%);
+    user-select: none;
+  }
+
+.primary-nav-1 .search-trigger.primary-nav {
+    padding: 0;
+  }
+
+.primary-nav-1 .search-trigger.primary-nav svg.primary-nav {
+    height: 4rem;
+    width: 4rem;
+  }
+
+.primary-nav-1 .search-trigger.primary-nav .fill-color.primary-nav {
+    fill: #999;
+  }
+
+.primary-nav-1 .search-activated.primary-nav {
+    position: relative;
+    z-index: 3;
+  }
+
+.primary-nav-1 .upload.primary-nav {
+    display: none;
+  }
+
+.primary-nav-1 .upload.primary-nav span.primary-nav {
+    display: none;
+  }
+
+.primary-nav-1 .upload.primary-nav svg.primary-nav {
+    height: 3rem;
+    width: 3rem;
+  }
+
+.primary-nav-1 .screen-name.primary-nav {
+    display: none;
+    font-size: 1.3rem;
+    vertical-align: middle;
+    text-transform: uppercase;
+  }
+
+.primary-nav-1 .user-menu.primary-nav {
+    color: #999;
+    padding: 0.5rem;
+    height: 100%;
+  }
+
+.primary-nav-1 button.user-menu.primary-nav:hover,
+  .primary-nav-1 button.user-menu.primary-nav:focus {
+    color: #fff;
+    outline: none;
+  }
+
+.primary-nav-1 .user-menu.active.primary-nav {
+    border-radius: 1rem 1rem 0 0;
+    background: #333;
+  }
+
+.primary-nav-1 .user-menu.primary-nav img.primary-nav {
+    display: block;
+    width: 3rem;
+    height: 3rem;
+  }
+
+.primary-nav-1 .link-home.primary-nav {
+    text-decoration: none;
+    display: inline-flex;
+  }
+
+.primary-nav-1 a.link-home.primary-nav:focus,
+  .primary-nav-1 a.link-home.primary-nav:focus-visible {
+    outline-offset: 1px;
+  }
+
+@media only screen and (min-width: 890px) and (max-device-width: 905px) {
+    .primary-nav-1 .branding.second-logo.primary-nav {
+      padding-right: 0;
+    }
+
+}
+
+@media (min-width: 906px) {
+    .primary-nav-1 .branding.second-logo.primary-nav {
+      padding-right: 20px;
+    }
+
+}

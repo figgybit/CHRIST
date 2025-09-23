@@ -1,0 +1,79 @@
+.media-button-1 .menu-item.media-button:hover,
+    .media-button-1 .menu-item.media-button:active,
+    .media-button-1 .menu-item.media-button:focus {
+      color: #fff;
+    }
+
+.media-button-1 .menu-item.media-button:hover .fill-color.media-button,
+    .media-button-1 .menu-item.media-button:active .fill-color.media-button,
+    .media-button-1 .menu-item.media-button:focus .fill-color.media-button {
+      fill: #fff;
+    }
+
+.media-button-1 .label.media-button {
+      display: none;
+    }
+
+.media-button-1 .label.media-button,
+    .media-button-1 .web.media-button:after {
+      padding-right: 1rem;
+      font-size: 1.3rem;
+      text-transform: uppercase;
+      color: inherit;
+    }
+
+.media-button-1 .web.media-button:after {
+      display: none;
+      content: "web";
+    }
+
+.media-button-1 .donate.media-button,
+    .media-button-1 .more.media-button {
+      display: none;
+    }
+
+.media-button-1 .menu-item.selected.media-button {
+      background: #474747;
+    }
+
+.media-button-1 .menu-item.selected.media-button .label.media-button,
+    .media-button-1 .menu-item.selected.web.media-button:after {
+      color: #fff;
+    }
+
+.media-button-1 .menu-item.selected.media-button .icon.media-button {
+      background: transparent;
+    }
+
+.media-button-1 .web.selected.media-button .fill-color.media-button {
+      fill: #ffcd27;
+    }
+
+.media-button-1 .texts.selected.media-button .fill-color.media-button {
+      fill: #faab3c;
+    }
+
+.media-button-1 .video.selected.media-button .fill-color.media-button {
+      fill: #f1644b;
+    }
+
+.media-button-1 .audio.selected.media-button .fill-color.media-button {
+      fill: #00adef;
+    }
+
+.media-button-1 .software.selected.media-button .fill-color.media-button {
+      fill: #9ecc4f;
+    }
+
+.media-button-1 .images.selected.media-button .fill-color.media-button {
+      fill: #aa99c9;
+    }
+
+}
+
+@media (min-width: 1200px) {
+
+.media-button-1 .label.media-button,
+    .media-button-1 .web.media-button:after {
+      display: inline;
+    }

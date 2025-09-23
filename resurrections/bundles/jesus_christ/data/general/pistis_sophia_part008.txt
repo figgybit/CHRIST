@@ -1,0 +1,88 @@
+.media-button-1 .web.media-button .label.media-button {
+      display: none;
+    }
+
+}
+</style><!-- Shady DOM styles for media-menu -->
+<style scope="media-menu-1">
+  .media-menu-1 {
+    outline: none;
+  }
+
+.media-menu-1 .media-menu-inner.media-menu {
+    z-index: -1;
+    top: -40rem;
+    background-color: #222;
+    margin: 0;
+    overflow: hidden;
+    transition-duration: 0.2s;
+    transition-property: top;
+    transition-timing-function: ease;
+  }
+
+.media-menu-1 .menu-group.media-menu {
+    position: relative;
+    line-height: normal;
+  }
+
+@media (max-width: 889px) {
+    .media-menu-1 .media-menu-inner.media-menu {
+      position: absolute;
+      width: 100%;
+    }
+
+.media-menu-1 .open.media-menu .media-menu-inner.media-menu {
+      top: 0;
+    }
+
+.media-menu-1 .overflow-clip.media-menu {
+      position: absolute;
+      z-index: -1;
+      top: 4rem;
+      left: 0;
+      height: 0;
+      width: 100%;
+      overflow: hidden;
+      transition-duration: 0.2s;
+      transition-property: height;
+    }
+
+.media-menu-1 .open.media-menu .overflow-clip.media-menu {
+      height: 40rem;
+    }
+
+}
+
+@media (min-width: 890px) {
+    .media-menu-1 .media-menu-inner.media-menu {
+      display: block;
+      position: static;
+      width: auto;
+      height: 5rem;
+      transition-property: none;
+    }
+
+.media-menu-1 .menu-group.media-menu {
+      font-size: 0;
+    }
+
+}
+</style><!-- Shady DOM styles for primary-nav -->
+<style scope="primary-nav-1">
+  .primary-nav-1 button.primary-nav:focus,
+  .primary-nav-1 input.primary-nav:focus {
+    outline: none;
+  }
+
+.primary-nav-1 nav.primary-nav {
+    position: relative;
+    display: flex;
+    height: 4rem;
+    grid-template-areas: 'hamburger empty heart search user';
+    -ms-grid-columns: 4rem minmax(1rem, 100%) 4rem 4rem 4rem;
+    grid-template-columns: 4rem auto 4rem 4rem 4rem;
+    -ms-grid-rows: 100%;
+    grid-template-rows: 100%;
+    background: #222;
+    border-bottom: 1px solid #333;
+  }

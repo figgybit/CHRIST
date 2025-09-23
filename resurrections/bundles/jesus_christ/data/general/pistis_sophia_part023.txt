@@ -1,0 +1,80 @@
+.signed-out-dropdown-1 .initial.signed-out-dropdown,
+    .signed-out-dropdown-1 .closed.signed-out-dropdown,
+    .signed-out-dropdown-1 .open.signed-out-dropdown {
+      right: 33.5rem;
+    }
+
+.signed-out-dropdown-1 .search-hidden.initial.signed-out-dropdown,
+    .signed-out-dropdown-1 .search-hidden.closed.signed-out-dropdown,
+    .signed-out-dropdown-1 .search-hidden.open.signed-out-dropdown {
+      right: 18.5rem;
+    }
+
+}
+
+@media (min-width: 990px) {
+
+.signed-out-dropdown-1 .initial.signed-out-dropdown,
+    .signed-out-dropdown-1 .closed.signed-out-dropdown,
+    .signed-out-dropdown-1 .open.signed-out-dropdown {
+      right: 40rem;
+    }
+
+.signed-out-dropdown-1 .search-hidden.initial.signed-out-dropdown,
+    .signed-out-dropdown-1 .search-hidden.closed.signed-out-dropdown,
+    .signed-out-dropdown-1 .search-hidden.open.signed-out-dropdown {
+      right: 26rem;
+    }
+
+}
+</style><!-- Shady DOM styles for ia-topnav -->
+<style scope="ia-topnav-1">
+  .ia-topnav-1 {
+    ;
+
+color: #fff;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+
+.ia-topnav-1 primary-nav.ia-topnav:focus {
+    outline: none !important;
+  }
+
+.ia-topnav-1 #close-layer.ia-topnav {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 3;
+  }
+
+.ia-topnav-1 #close-layer.visible.ia-topnav {
+    display: block;
+  }
+
+.ia-topnav-1 .topnav.ia-topnav {
+    position: relative;
+    z-index: 4;
+  }
+
+@media (max-width: 889px) {
+    .ia-topnav-1 desktop-subnav.ia-topnav {
+      display: none;
+    }
+
+}
+</style>
+<style>
+  body {
+    transition: opacity ease-in 0.2s;
+  }
+
+body[unresolved] {
+    opacity: 0;
+    display: block;
+    overflow: hidden;
+    position: relative;
+  }
+</style>

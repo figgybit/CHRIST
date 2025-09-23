@@ -1,0 +1,80 @@
+.primary-nav-1 .upload.primary-nav:hover svg.primary-nav,
+    .primary-nav-1 .upload.primary-nav:focus svg.primary-nav,
+    .primary-nav-1 .upload.primary-nav:active svg.primary-nav {
+      fill: #fff;
+    }
+
+.primary-nav-1 nav-search.primary-nav {
+      float: right;
+      margin-left: 1rem;
+    }
+
+}
+
+@media (min-width: 990px) {
+    .primary-nav-1 .screen-name.primary-nav {
+      display: inline-block;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      max-width: 165px;
+    }
+
+.primary-nav-1 .upload.primary-nav span.primary-nav {
+      display: inline;
+    }
+
+}
+</style><!-- Shady DOM styles for user-menu --><!-- Shady DOM styles for search-menu -->
+<style scope="search-menu-1">
+  .search-menu-1 .menu-wrapper.search-menu {
+    position: relative;
+  }
+
+.search-menu-1 button.search-menu:focus,
+  .search-menu-1 input.search-menu:focus {
+    outline-color: #428bca;
+    outline-width: 0.16rem;
+    outline-style: auto;
+    outline-offset: 2px !important;
+  }
+
+.search-menu-1 .search-menu-inner.search-menu {
+    position: absolute;
+    right: 0;
+    left: 0;
+    z-index: 4;
+    padding: 0 4.5rem;
+    font-size: 1.6rem;
+    background-color: #333;
+  }
+
+.search-menu-1 .tx-slide.search-menu {
+    overflow: hidden;
+    transition-property: top;
+    transition-duration: 0.2s;
+    transition-timing-function: ease;
+  }
+
+.search-menu-1 .initial.search-menu,
+  .search-menu-1 .closed.search-menu {
+    top: -1500px;
+  }
+
+.search-menu-1 .closed.search-menu {
+    transition-duration: 0.2s;
+  }
+
+.search-menu-1 label.search-menu,
+  .search-menu-1 a.search-menu {
+    padding: 1rem;
+    display: block;
+  }
+
+.search-menu-1 .advanced-search.search-menu {
+    text-decoration: none;
+    color: #428bca;
+    line-height: normal;
+    padding: 0.5rem;
+    margin-top: 5px;
+  }

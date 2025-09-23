@@ -652,12 +652,12 @@ PRIVACY_TRAINING_MODULES = [
 
 ## Contact Information
 
-**Privacy Officer**: privacy@christproject.org
-**Data Protection Officer**: dpo@christproject.org
-**Security Team**: security@christproject.org
+**Privacy Officer**: privacy@christs.ai
+**Data Protection Officer**: dpo@christs.ai
+**Security Team**: security@christs.ai
 
-**Regulatory Inquiries**: legal@christproject.org
-**User Support**: support@christproject.org
+**Regulatory Inquiries**: legal@christs.ai
+**User Support**: support@christs.ai
 
 ---
 

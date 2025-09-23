@@ -1,0 +1,91 @@
+.login-button-1 span.login-button a.login-button {
+    color: inherit;
+    text-decoration: none;
+    outline: 0;
+  }
+
+.login-button-1 a.login-button:hover,
+  .login-button-1 a.login-button:active,
+  .login-button-1 a.login-button:focus {
+    color: #fff !important;
+    outline: none !important;
+    outline-offset: inherit !important;
+  }
+
+@media (min-width: 890px) {
+    .login-button-1 .logged-out-toolbar.login-button {
+      padding: 1rem 0.5rem;
+      vertical-align: middle;
+    }
+
+.login-button-1 .active.login-button {
+      background: transparent;
+    }
+
+.login-button-1 .dropdown-toggle.login-button {
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+.login-button-1 .dropdown-toggle.login-button svg.login-button {
+      height: 3rem;
+      width: 3rem;
+      display: block;
+    }
+
+.login-button-1 span.login-button {
+      display: inline;
+      vertical-align: middle;
+    }
+
+}
+</style><!-- Shady DOM styles for nav-search -->
+<style scope="nav-search-1">
+  .nav-search-1 input.nav-search[type="text"] {
+    color: #222;
+  }
+
+.nav-search-1 input.nav-search:focus {
+    outline: none;
+  }
+
+.nav-search-1 button.nav-search {
+    background: none;
+    color: inherit;
+    border: none;
+    font: inherit;
+    cursor: pointer;
+  }
+
+.nav-search-1 button.nav-search:focus {
+    outline: none;
+  }
+
+.nav-search-1 .search.nav-search {
+    padding-top: 0;
+    margin-right: 0.5rem;
+  }
+
+.nav-search-1 .search.nav-search svg.nav-search {
+    position: relative;
+    fill: ;
+  }
+
+.nav-search-1 .search-activated.nav-search {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    position: absolute;
+    top: 0;
+    right: 4rem;
+    bottom: 0;
+    left: 4rem;
+    z-index: 3;
+    padding: 0.5rem 0.2rem;
+    border-radius: 1rem 1rem 0 0;
+    background: #333;
+  }
+
+.nav-search-1 .search-inactive.nav-search {
+    display: none;
+  }

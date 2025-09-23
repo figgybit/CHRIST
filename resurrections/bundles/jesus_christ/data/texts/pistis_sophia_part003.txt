@@ -1,0 +1,67 @@
+<!-- Wraps all page content -->
+    <div id="wrap"
+          >
+                    <div class="ia-banners">
+              <div
+        class="ia-banner hidden post-appeal-20240905"
+        data-campaign="post-appeal-20240905">
+        <p><a href="https://change.org/LetReadersRead" rel="ugc nofollow">Ask the publishers</a> to restore access to 500,000+ books.</p>
+        <form class="banner-close" action="" method="get" data-action="ia-banner-close">
+          <fieldset>
+            <button aria-label="Close Banner" type="submit"></button>
+          </fieldset>
+        </form>
+      </div>
+          </div>
+                    <div id="topnav">
+              <input class="js_nav_tweaks" type="hidden" value='[]'/>
+    <!-- Shady DOM styles for icon-hamburger -->
+<style scope="icon-hamburger-1">
+  .icon-hamburger-1 svg.icon-hamburger {
+    display: block;
+    height: 4rem;
+    width: 4rem;
+  }
+
+.icon-hamburger-1 .fill-color.icon-hamburger {
+    fill: #fff;
+  }
+</style><!-- Shady DOM styles for login-button -->
+<style scope="login-button-1">
+  .login-button-1 .dropdown-toggle.login-button {
+    display: block;
+    text-transform: uppercase;
+    color: #ccc;
+    cursor: pointer;
+  }
+
+.login-button-1 .dropdown-toggle.login-button svg.login-button {
+    height: 100%;
+    width: 4rem;
+  }
+
+.login-button-1 .dropdown-toggle.login-button .fill-color.login-button {
+    fill: #999;
+  }
+
+.login-button-1 .dropdown-toggle.login-button:active .fill-color.login-button,
+  .login-button-1 .dropdown-toggle.login-button:focus .fill-color.login-button,
+  .login-button-1 .dropdown-toggle.login-button:hover .fill-color.login-button {
+    fill: #fff;
+  }
+
+.login-button-1 .active.login-button {
+    border-radius: 1rem 1rem 0 0;
+    background: #333;
+  }
+
+.login-button-1 .active.login-button .fill-color.login-button {
+    fill: #fff;
+  }
+
+.login-button-1 span.login-button {
+    display: none;
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    color: #999;
+  }
