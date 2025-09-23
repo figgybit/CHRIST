@@ -208,6 +208,100 @@ Use Tab for auto-completion. Ctrl+D or 'exit' to quit.
         except Exception as e:
             print(f"Failed to load bundle: {e}")
 
+    def do_purge(self, arg):
+        """Purge/forget specific memories from a bundle.
+        Usage: purge [bundle_name] [category|pattern]
+
+        Examples:
+          purge jesus_christ gnostic       # Purge all gnostic texts
+          purge jesus_christ test_pistis   # Purge files matching pattern
+          purge                            # Show purge options for active bundle
+        """
+        args = arg.split()
+
+        # Determine bundle and what to purge
+        if len(args) == 0:
+            if not self.active_resurrection:
+                print("No active bundle. Use 'load <bundle>' first or specify bundle name")
+                print("Usage: purge <bundle_name> [category|pattern]")
+                return
+
+            # Show categories for active bundle
+            bundle_name = self.active_resurrection.figure_name
+            data_dir = Path(f"resurrections/bundles/{bundle_name}/data")
+
+            print(f"\n🗑️  Purge options for {bundle_name}:")
+            print("\nCategories:")
+            if data_dir.exists():
+                categories = [d.name for d in data_dir.iterdir() if d.is_dir()]
+                for cat in categories:
+                    file_count = len(list((data_dir / cat).glob("*")))
+                    print(f"  • {cat:<20} ({file_count} files)")
+
+            print("\nUsage:")
+            print(f"  purge {bundle_name} <category>     # Purge entire category")
+            print(f"  purge {bundle_name} <pattern>      # Purge files matching pattern")
+            return
+
+        bundle_name = args[0]
+        purge_target = args[1] if len(args) > 1 else None
+
+        # Load the resurrection
+        try:
+            if self.active_resurrection and self.active_resurrection.figure_name == bundle_name:
+                resurrection = self.active_resurrection
+            else:
+                resurrection = ResurrectionConsciousness(bundle_name)
+        except Exception as e:
+            print(f"Failed to load bundle '{bundle_name}': {e}")
+            return
+
+        if not purge_target:
+            print(f"What to purge from {bundle_name}?")
+            print("  Specify a category or filename pattern")
+            return
+
+        # Check if it's a category
+        data_dir = Path(f"resurrections/bundles/{bundle_name}/data")
+        category_dir = data_dir / purge_target
+
+        print(f"\n🧹 Purging from {bundle_name}...")
+
+        if category_dir.exists() and category_dir.is_dir():
+            # Purge entire category
+            confirm = input(f"⚠️  Delete all files in '{purge_target}' category? (yes/no): ")
+            if confirm.lower() != 'yes':
+                print("Cancelled")
+                return
+
+            results = resurrection.purge_memory(category=purge_target)
+        else:
+            # Purge by pattern
+            confirm = input(f"⚠️  Delete files matching '{purge_target}'? (yes/no): ")
+            if confirm.lower() != 'yes':
+                print("Cancelled")
+                return
+
+            results = resurrection.purge_memory(source_pattern=purge_target)
+
+        # Show results
+        if results.get("purged_files"):
+            print(f"\n✅ Purged {len(results['purged_files'])} files:")
+            for file in results["purged_files"][:10]:  # Show first 10
+                print(f"  • {file}")
+            if len(results["purged_files"]) > 10:
+                print(f"  ... and {len(results['purged_files']) - 10} more")
+
+            print("\n⚠️  Note: Vector database entries not yet purged (TODO)")
+
+        if results.get("errors"):
+            print(f"\n❌ Errors occurred:")
+            for error in results["errors"]:
+                print(f"  • {error}")
+
+        if not results.get("purged_files") and not results.get("errors"):
+            print(f"Nothing found to purge matching '{purge_target}'")
+
     def do_inbox(self, arg):
         """Process new data in a bundle's inbox.
         Usage: inbox [bundle_name]

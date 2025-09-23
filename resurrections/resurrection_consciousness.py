@@ -289,6 +289,7 @@ Respond as {self.figure_name} would, using their voice and wisdom:"""
     def process_inbox(self) -> Dict[str, Any]:
         """
         Process new texts in the bundle's inbox directory.
+        Automatically splits large texts into manageable chunks.
 
         Returns:
             Processing results
@@ -319,49 +320,20 @@ Respond as {self.figure_name} would, using their voice and wisdom:"""
                 with open(txt_file, 'r', encoding='utf-8') as f:
                     content = f.read()
 
-                # Determine category based on filename or content
-                category = self._determine_category(txt_file.name, content)
+                # Check if file needs splitting (>10KB or has chapter structure)
+                if len(content) > 10000 or 'CHAPTER' in content.upper()[:1000]:
+                    print(f"  📄 Splitting large text: {txt_file.name}")
+                    split_files = self._split_large_text(txt_file, content)
 
-                # Create target directory
-                target_dir = self.data_dir / category
-                target_dir.mkdir(parents=True, exist_ok=True)
+                    # Process each split file
+                    for split_file in split_files:
+                        self._process_single_file(split_file, results)
 
-                # Move file to appropriate data directory
-                target_path = target_dir / txt_file.name
-                shutil.move(str(txt_file), str(target_path))
-
-                # Index the new content
-                chunks = [c.strip() for c in content.split('\n\n') if c.strip() and len(c.strip()) > 50]
-
-                documents = []
-                metadatas = []
-                ids = []
-
-                for i, chunk in enumerate(chunks):
-                    if len(chunk) > 50:
-                        doc_id = f"{txt_file.stem}_{i}_{uuid.uuid4().hex[:8]}"
-                        documents.append(chunk)
-                        metadatas.append({
-                            "source": str(target_path.relative_to(self.data_dir)),
-                            "figure": self.figure_name,
-                            "chunk_index": i,
-                            "category": category,
-                            "added_date": datetime.now().isoformat()
-                        })
-                        ids.append(doc_id)
-
-                # Add to vector store
-                if documents:
-                    self.vector_store.add_documents(
-                        documents=documents,
-                        metadatas=metadatas,
-                        ids=ids
-                    )
-
-                    results["processed_files"].append(txt_file.name)
-                    results["indexed_documents"] += len(documents)
-
-                    print(f"  ✓ Processed {txt_file.name}: {len(documents)} chunks indexed")
+                    # Remove original from inbox
+                    txt_file.unlink()
+                else:
+                    # Process as single file
+                    self._process_single_file(txt_file, results)
 
             except Exception as e:
                 error_msg = f"Error processing {txt_file.name}: {str(e)}"
@@ -386,9 +358,122 @@ Respond as {self.figure_name} would, using their voice and wisdom:"""
 
         return results
 
+    def _split_large_text(self, file_path: Path, content: str) -> List[Path]:
+        """Split large text into chapter/section files"""
+        import re
+
+        split_files = []
+        inbox_dir = file_path.parent
+
+        # Detect and split by chapters
+        chapter_pattern = r'(CHAPTER\s+[IVXLCDM]+|CHAPTER\s+\d+|Chapter\s+\d+)'
+        matches = list(re.finditer(chapter_pattern, content, re.IGNORECASE))
+
+        if len(matches) > 2:
+            # Split by chapters
+            for i, match in enumerate(matches):
+                start = match.start()
+                end = matches[i + 1].start() if i + 1 < len(matches) else len(content)
+
+                chapter_text = content[start:end].strip()
+                if len(chapter_text) > 100:
+                    chapter_num = i + 1
+                    new_file = inbox_dir / f"{file_path.stem}_ch{chapter_num:03d}.txt"
+
+                    with open(new_file, 'w', encoding='utf-8') as f:
+                        f.write(chapter_text)
+
+                    split_files.append(new_file)
+        else:
+            # Split by size (every 2000 chars with paragraph boundaries)
+            chunks = []
+            current_chunk = []
+            current_size = 0
+
+            paragraphs = content.split('\n\n')
+            for para in paragraphs:
+                para = para.strip()
+                if not para:
+                    continue
+
+                if current_size + len(para) > 2000 and current_chunk:
+                    chunks.append('\n\n'.join(current_chunk))
+                    current_chunk = [para]
+                    current_size = len(para)
+                else:
+                    current_chunk.append(para)
+                    current_size += len(para)
+
+            if current_chunk:
+                chunks.append('\n\n'.join(current_chunk))
+
+            # Save chunks
+            for i, chunk in enumerate(chunks):
+                new_file = inbox_dir / f"{file_path.stem}_part{i+1:03d}.txt"
+                with open(new_file, 'w', encoding='utf-8') as f:
+                    f.write(chunk)
+                split_files.append(new_file)
+
+        return split_files
+
+    def _process_single_file(self, txt_file: Path, results: Dict[str, Any]):
+        """Process a single text file"""
+        try:
+            with open(txt_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+
+            # Determine category (generalized)
+            category = self._determine_category(txt_file.name, content)
+
+            # Create target directory
+            target_dir = self.data_dir / category
+            target_dir.mkdir(parents=True, exist_ok=True)
+
+            # Move file to appropriate data directory
+            target_path = target_dir / txt_file.name
+            shutil.move(str(txt_file), str(target_path))
+
+            # Index the content
+            chunks = [c.strip() for c in content.split('\n\n') if c.strip() and len(c.strip()) > 50]
+
+            documents = []
+            metadatas = []
+            ids = []
+
+            for i, chunk in enumerate(chunks):
+                if len(chunk) > 50:
+                    doc_id = f"{txt_file.stem}_{i}_{uuid.uuid4().hex[:8]}"
+                    documents.append(chunk)
+                    metadatas.append({
+                        "source": str(target_path.relative_to(self.data_dir)),
+                        "figure": self.figure_name,
+                        "chunk_index": i,
+                        "category": category,
+                        "added_date": datetime.now().isoformat()
+                    })
+                    ids.append(doc_id)
+
+            # Add to vector store
+            if documents:
+                self.vector_store.add_documents(
+                    documents=documents,
+                    metadatas=metadatas,
+                    ids=ids
+                )
+
+                results["processed_files"].append(txt_file.name)
+                results["indexed_documents"] += len(documents)
+
+                print(f"  ✓ Processed {txt_file.name}: {len(documents)} chunks indexed")
+
+        except Exception as e:
+            error_msg = f"Error processing {txt_file.name}: {str(e)}"
+            results["errors"].append(error_msg)
+            print(f"  ✗ {error_msg}")
+
     def _determine_category(self, filename: str, content: str) -> str:
         """
-        Determine the appropriate category for a text based on filename and content.
+        Determine the appropriate category for a text (generalized).
 
         Args:
             filename: Name of the file
@@ -400,28 +485,99 @@ Respond as {self.figure_name} would, using their voice and wisdom:"""
         filename_lower = filename.lower()
         content_lower = content.lower()[:1000]  # Check first 1000 chars
 
-        # Check filename patterns
-        if "gnostic" in filename_lower or "gnosis" in filename_lower:
-            return "gnostic"
-        elif "apocry" in filename_lower:
-            return "apocryphal"
-        elif any(gospel in filename_lower for gospel in ["matthew", "mark", "luke", "john"]):
-            return "canonical"
-        elif "teach" in filename_lower or "sermon" in filename_lower:
+        # General categorization (not specific to any figure)
+        if any(term in filename_lower for term in ["primary", "source", "original", "canon"]):
+            return "primary_sources"
+        elif any(term in filename_lower for term in ["commentary", "analysis", "interpret"]):
+            return "commentary"
+        elif any(term in filename_lower for term in ["letter", "epistle", "correspond"]):
+            return "correspondence"
+        elif any(term in filename_lower for term in ["biography", "life", "history"]):
+            return "biographical"
+        elif any(term in filename_lower for term in ["teach", "lesson", "discourse"]):
             return "teachings"
-        elif "daily" in filename_lower or "life" in filename_lower:
-            return "daily_life"
+        elif any(term in filename_lower for term in ["ritual", "practice", "ceremony"]):
+            return "practices"
 
-        # Check content patterns
-        if "gnosis" in content_lower or "sophia" in content_lower or "aeon" in content_lower:
-            return "gnostic"
-        elif "blessed are" in content_lower or "verily i say" in content_lower:
-            return "teachings"
-        elif "walked" in content_lower and "disciples" in content_lower:
-            return "daily_life"
+        # Check content for general patterns
+        if any(term in content_lower for term in ["chapter", "verse", "book"]):
+            return "texts"
+        elif any(term in content_lower for term in ["said", "spoke", "answered"]):
+            return "dialogues"
 
         # Default category
-        return "supplemental"
+        return "general"
+
+    def purge_memory(self, category: Optional[str] = None, source_pattern: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Purge/forget specific memories from the consciousness.
+
+        Args:
+            category: Category to purge (e.g., 'gnostic', 'supplemental')
+            source_pattern: Pattern to match in source filenames
+
+        Returns:
+            Purge results
+        """
+        results = {
+            "purged_files": [],
+            "purged_documents": 0,
+            "errors": []
+        }
+
+        print(f"🧹 Purging memories...")
+
+        # Get all documents from vector store
+        # This is a simplified version - actual implementation depends on vector store API
+
+        if category:
+            # Remove files from category directory
+            category_dir = self.data_dir / category
+            if category_dir.exists():
+                for file in category_dir.glob("*"):
+                    try:
+                        file.unlink()
+                        results["purged_files"].append(str(file.name))
+                        print(f"  ✓ Purged {file.name}")
+                    except Exception as e:
+                        results["errors"].append(f"Failed to delete {file.name}: {e}")
+
+                # Try to remove the directory if empty
+                try:
+                    category_dir.rmdir()
+                except:
+                    pass  # Directory not empty or other error
+
+        if source_pattern:
+            # Search all categories for matching files
+            for dir_path in self.data_dir.glob("*"):
+                if dir_path.is_dir():
+                    for file in dir_path.glob(f"*{source_pattern}*"):
+                        try:
+                            file.unlink()
+                            results["purged_files"].append(str(file.name))
+                            print(f"  ✓ Purged {file.name}")
+                        except Exception as e:
+                            results["errors"].append(f"Failed to delete {file.name}: {e}")
+
+        # Update metadata
+        if results["purged_files"]:
+            # This is simplified - would need to actually remove from vector store
+            self.metadata["statistics"]["last_purge"] = datetime.now().isoformat()
+
+            if "purge_history" not in self.metadata:
+                self.metadata["purge_history"] = []
+
+            self.metadata["purge_history"].append({
+                "timestamp": datetime.now().isoformat(),
+                "category": category,
+                "pattern": source_pattern,
+                "files_purged": results["purged_files"]
+            })
+
+            self._save_metadata(self.metadata)
+
+        return results
 
     def export_bundle(self, output_path: str) -> bool:
         """
