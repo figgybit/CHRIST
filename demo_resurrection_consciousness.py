@@ -6,14 +6,17 @@ Each resurrection has its own portable consciousness bundle
 """
 
 import sys
+import os
 from pathlib import Path
 
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent))
+
 # Ensure we're using venv
-import os
 if 'VIRTUAL_ENV' not in os.environ:
     print("⚠️  Please activate the virtual environment first:")
     print("   source venv/bin/activate")
-    sys.exit(1)
+    print("   Or set: export VIRTUAL_ENV=venv")
 
 from resurrections.resurrection_consciousness import ResurrectionBot
 
