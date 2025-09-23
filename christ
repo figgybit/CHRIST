@@ -5,16 +5,20 @@
 GREEN='\033[0;32m'
 NC='\033[0m'
 
-# Check if venv exists and activate it
-if [ -d "venv" ]; then
-    export VIRTUAL_ENV="venv"
-    export PATH="venv/bin:$PATH"
-elif [ -d "../venv" ]; then
-    export VIRTUAL_ENV="../venv"
-    export PATH="../venv/bin:$PATH"
+# Determine Python command to use
+if [ -n "$VIRTUAL_ENV" ]; then
+    # Already in venv, use python3 from PATH
+    PYTHON_CMD="python3"
+elif [ -f "../venv/bin/python3" ]; then
+    # Use parent directory venv (the actual location)
+    PYTHON_CMD="../venv/bin/python3"
+elif [ -f "venv/bin/python3" ]; then
+    # Check current directory venv as fallback
+    PYTHON_CMD="venv/bin/python3"
 else
-    echo "Virtual environment not found. Run ./setup.sh first."
-    exit 1
+    # Fall back to system python3
+    echo "⚠️  Virtual environment not found. Using system Python."
+    PYTHON_CMD="python3"
 fi
 
 # Check if Ollama is running (optional)
@@ -24,5 +28,5 @@ if ! curl -s http://localhost:11434/api/tags > /dev/null 2>&1; then
     echo ""
 fi
 
-# Launch the terminal with python3
-python3 christ_terminal.py "$@"
+# Launch the terminal
+$PYTHON_CMD christ_terminal.py "$@"
