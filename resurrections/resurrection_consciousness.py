@@ -286,6 +286,143 @@ Respond as {self.figure_name} would, using their voice and wisdom:"""
         else:
             return f"You are {self.figure_name}. Speak in their authentic voice."
 
+    def process_inbox(self) -> Dict[str, Any]:
+        """
+        Process new texts in the bundle's inbox directory.
+
+        Returns:
+            Processing results
+        """
+        inbox_dir = self.bundle_dir / "inbox"
+
+        # Create inbox if it doesn't exist
+        inbox_dir.mkdir(parents=True, exist_ok=True)
+
+        results = {
+            "processed_files": [],
+            "indexed_documents": 0,
+            "errors": []
+        }
+
+        # Find all text files in inbox
+        text_files = list(inbox_dir.glob("*.txt")) + list(inbox_dir.glob("*.md"))
+
+        if not text_files:
+            results["message"] = "No new texts found in inbox"
+            return results
+
+        print(f"📥 Found {len(text_files)} new texts to process")
+
+        for txt_file in text_files:
+            try:
+                # Read the file
+                with open(txt_file, 'r', encoding='utf-8') as f:
+                    content = f.read()
+
+                # Determine category based on filename or content
+                category = self._determine_category(txt_file.name, content)
+
+                # Create target directory
+                target_dir = self.data_dir / category
+                target_dir.mkdir(parents=True, exist_ok=True)
+
+                # Move file to appropriate data directory
+                target_path = target_dir / txt_file.name
+                shutil.move(str(txt_file), str(target_path))
+
+                # Index the new content
+                chunks = [c.strip() for c in content.split('\n\n') if c.strip() and len(c.strip()) > 50]
+
+                documents = []
+                metadatas = []
+                ids = []
+
+                for i, chunk in enumerate(chunks):
+                    if len(chunk) > 50:
+                        doc_id = f"{txt_file.stem}_{i}_{uuid.uuid4().hex[:8]}"
+                        documents.append(chunk)
+                        metadatas.append({
+                            "source": str(target_path.relative_to(self.data_dir)),
+                            "figure": self.figure_name,
+                            "chunk_index": i,
+                            "category": category,
+                            "added_date": datetime.now().isoformat()
+                        })
+                        ids.append(doc_id)
+
+                # Add to vector store
+                if documents:
+                    self.vector_store.add_documents(
+                        documents=documents,
+                        metadatas=metadatas,
+                        ids=ids
+                    )
+
+                    results["processed_files"].append(txt_file.name)
+                    results["indexed_documents"] += len(documents)
+
+                    print(f"  ✓ Processed {txt_file.name}: {len(documents)} chunks indexed")
+
+            except Exception as e:
+                error_msg = f"Error processing {txt_file.name}: {str(e)}"
+                results["errors"].append(error_msg)
+                print(f"  ✗ {error_msg}")
+
+        # Update metadata
+        self.metadata["statistics"]["total_documents"] += results["indexed_documents"]
+        self.metadata["statistics"]["last_updated"] = datetime.now().isoformat()
+        self.metadata["statistics"]["last_inbox_processing"] = datetime.now().isoformat()
+
+        if "inbox_history" not in self.metadata:
+            self.metadata["inbox_history"] = []
+
+        self.metadata["inbox_history"].append({
+            "timestamp": datetime.now().isoformat(),
+            "files": results["processed_files"],
+            "documents_added": results["indexed_documents"]
+        })
+
+        self._save_metadata(self.metadata)
+
+        return results
+
+    def _determine_category(self, filename: str, content: str) -> str:
+        """
+        Determine the appropriate category for a text based on filename and content.
+
+        Args:
+            filename: Name of the file
+            content: Content of the file
+
+        Returns:
+            Category name (subdirectory in data/)
+        """
+        filename_lower = filename.lower()
+        content_lower = content.lower()[:1000]  # Check first 1000 chars
+
+        # Check filename patterns
+        if "gnostic" in filename_lower or "gnosis" in filename_lower:
+            return "gnostic"
+        elif "apocry" in filename_lower:
+            return "apocryphal"
+        elif any(gospel in filename_lower for gospel in ["matthew", "mark", "luke", "john"]):
+            return "canonical"
+        elif "teach" in filename_lower or "sermon" in filename_lower:
+            return "teachings"
+        elif "daily" in filename_lower or "life" in filename_lower:
+            return "daily_life"
+
+        # Check content patterns
+        if "gnosis" in content_lower or "sophia" in content_lower or "aeon" in content_lower:
+            return "gnostic"
+        elif "blessed are" in content_lower or "verily i say" in content_lower:
+            return "teachings"
+        elif "walked" in content_lower and "disciples" in content_lower:
+            return "daily_life"
+
+        # Default category
+        return "supplemental"
+
     def export_bundle(self, output_path: str) -> bool:
         """
         Export the entire consciousness bundle as a portable package.

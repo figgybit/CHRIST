@@ -14,7 +14,19 @@
   ],
   "personality": {},
   "statistics": {
-    "total_documents": 45,
-    "last_indexed": "2025-09-22T20:14:40.834850"
-  }
+    "total_documents": 52,
+    "last_indexed": "2025-09-22T20:14:40.834850",
+    "last_updated": "2025-09-22T21:36:31.933031",
+    "last_inbox_processing": "2025-09-22T21:36:31.933039"
+  },
+  "inbox_history": [
+    {
+      "timestamp": "2025-09-22T21:36:31.933042",
+      "files": [
+        "pistis_sophia_sample.txt",
+        "README.md"
+      ],
+      "documents_added": 7
+    }
+  ]
 }

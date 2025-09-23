@@ -210,36 +210,75 @@ Use Tab for auto-completion. Ctrl+D or 'exit' to quit.
 
     def do_inbox(self, arg):
         """Process new data in a bundle's inbox.
-        Usage: inbox <bundle_name>
+        Usage: inbox [bundle_name]
 
         Bundles can have an 'inbox' directory where new texts are placed.
         This command processes and indexes them.
         """
+        # Determine which bundle to process
         if not arg:
             if self.active_resurrection:
                 bundle_name = self.active_resurrection.figure_name
+                resurrection = self.active_resurrection
             else:
                 print("Usage: inbox <bundle_name>")
+                print("Or load a bundle first with: load <bundle_name>")
                 return
         else:
             bundle_name = arg
+            # Load the resurrection for this bundle
+            try:
+                resurrection = ResurrectionConsciousness(bundle_name)
+            except Exception as e:
+                print(f"Failed to load bundle '{bundle_name}': {e}")
+                return
 
         inbox_path = Path(f"resurrections/bundles/{bundle_name}/inbox")
+
+        # Check if inbox exists and has files
         if not inbox_path.exists():
-            print(f"No inbox found for {bundle_name}")
-            print(f"Create one at: {inbox_path}")
+            inbox_path.mkdir(parents=True, exist_ok=True)
+            print(f"Created inbox at: {inbox_path}")
+            print("\nTo add texts:")
+            print(f"  1. Download: wget <url> -O {inbox_path}/filename.txt")
+            print(f"  2. Or copy: cp <file> {inbox_path}/")
+            print("  3. Run: inbox")
             return
 
-        # Process inbox files
+        # Count files in inbox
+        txt_files = list(inbox_path.glob("*.txt")) + list(inbox_path.glob("*.md"))
+        if not txt_files:
+            print(f"📭 Inbox is empty at: {inbox_path}")
+            print("\nTo add texts:")
+            print(f"  wget <url> -O {inbox_path}/filename.txt")
+            return
+
         print(f"📥 Processing inbox for {bundle_name}...")
+        print(f"  Found {len(txt_files)} files to process")
 
-        # Implementation would:
-        # 1. Read new files from inbox
-        # 2. Index them into the bundle's vector DB
-        # 3. Move processed files to appropriate data directory
-        # 4. Update metadata
+        # Process the inbox
+        results = resurrection.process_inbox()
 
-        print("  [Inbox processing to be implemented]")
+        # Show results
+        if results.get("processed_files"):
+            print(f"\n✅ Successfully processed:")
+            for file in results["processed_files"]:
+                print(f"  • {file}")
+            print(f"\n📊 Added {results['indexed_documents']} new passages to consciousness")
+
+            # Update stats if this is the active resurrection
+            if self.active_resurrection and self.active_resurrection.figure_name == bundle_name:
+                stats = self.active_resurrection.get_stats()
+                total = stats.get("metadata", {}).get("statistics", {}).get("total_documents", 0)
+                print(f"📚 Total documents now: {total}")
+
+        if results.get("errors"):
+            print(f"\n⚠️  Errors occurred:")
+            for error in results["errors"]:
+                print(f"  • {error}")
+
+        if results.get("message"):
+            print(f"\n{results['message']}")
 
     def do_resurrect(self, query):
         """Query the active resurrection.
