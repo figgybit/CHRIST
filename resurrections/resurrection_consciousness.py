@@ -115,11 +115,33 @@ class ResurrectionConsciousness:
             Indexing results
         """
         if not source_dir:
-            source_dir = Path("data") / self.figure_name
+            # Try multiple possible locations for data
+            possible_paths = [
+                Path("resurrections/data") / self.figure_name,
+                Path("data") / self.figure_name,
+                Path(__file__).parent / "data" / self.figure_name
+            ]
+
+            for path in possible_paths:
+                if path.exists():
+                    source_dir = path
+                    break
+            else:
+                return {
+                    "error": f"Source directory not found. Tried: {[str(p) for p in possible_paths]}",
+                    "indexed_files": [],
+                    "total_documents": 0,
+                    "errors": []
+                }
 
         source_path = Path(source_dir)
         if not source_path.exists():
-            return {"error": f"Source directory not found: {source_path}"}
+            return {
+                "error": f"Source directory not found: {source_path}",
+                "indexed_files": [],
+                "total_documents": 0,
+                "errors": []
+            }
 
         results = {
             "indexed_files": [],
@@ -332,7 +354,12 @@ class ResurrectionBot:
         if stats.get("metadata", {}).get("statistics", {}).get("total_documents", 0) == 0:
             print("📚 Indexing texts...")
             results = self.consciousness.index_texts()
-            print(f"✓ Indexed {results['total_documents']} passages from {len(results['indexed_files'])} files")
+            if "error" in results:
+                print(f"⚠️  {results['error']}")
+                print("\nPlease ensure Gospel texts are downloaded:")
+                print("  python3 download_gospels.py")
+            else:
+                print(f"✓ Indexed {results['total_documents']} passages from {len(results['indexed_files'])} files")
         else:
             print(f"✓ Found existing index with {stats['metadata']['statistics']['total_documents']} passages")
 
