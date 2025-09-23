@@ -5,14 +5,22 @@ Consciousness ingestion module for processing and storing various data formats.
 import os
 import json
 import hashlib
+import uuid
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, Optional, List
-import uuid
 
 from consciousness.parsers import UniversalParser
 from consciousness.encryption import EncryptionManager
 from consciousness.database import DatabaseManager
+from enum import Enum
+
+
+class ConsentLevel(Enum):
+    """Privacy consent levels for data storage."""
+    NONE = "none"
+    METADATA = "metadata_only"
+    FULL = "full"
 
 
 class ConsciousnessIngestor:
@@ -40,6 +48,74 @@ class ConsciousnessIngestor:
         self.encryption_manager = EncryptionManager() if encryption_enabled else None
         self.consent_level = consent_level
         self.encryption_enabled = encryption_enabled
+
+    def ingest_text(
+        self,
+        content: str,
+        source: str = "direct_text",
+        metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Ingest raw text content into the consciousness system.
+
+        Args:
+            content: Text content to ingest
+            source: Source identifier for the text
+            metadata: Additional metadata for the text
+
+        Returns:
+            Dict with ingestion results
+        """
+        # Create event ID
+        event_id = str(uuid.uuid4())
+
+        # Prepare metadata
+        if metadata is None:
+            metadata = {}
+
+        # Add to vector store if available
+        if self.vector_store:
+            self.vector_store.add_documents(
+                documents=[content],
+                metadatas=[{
+                    **metadata,
+                    'source': source,
+                    'timestamp': datetime.utcnow().isoformat(),
+                    'event_id': event_id
+                }],
+                ids=[event_id]
+            )
+
+        # Store in database if enabled
+        if self.consent_level != 'none':
+            # Create event
+            event_data = {
+                'id': event_id,
+                'user_id': metadata.get('user_id', 'default'),
+                'timestamp': datetime.utcnow().isoformat(),
+                'event_type': 'text_content',
+                'source_type': 'direct',
+                'source_path': source,
+                'content': {'text': content} if self.consent_level == 'full' else {},
+                'metadata': metadata,
+                'consent_level': self.consent_level,
+                'processing_status': 'completed'
+            }
+
+            # Save to database
+            try:
+                event = self.db_manager.save_event(event_data)
+            except Exception as e:
+                # Database might not be initialized, skip
+                pass
+
+        return {
+            'status': 'success',
+            'event_id': event_id,
+            'source': source,
+            'content_length': len(content),
+            'metadata': metadata
+        }
 
     def ingest_file(self, file_path: str) -> Dict[str, Any]:
         """

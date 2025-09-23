@@ -183,20 +183,13 @@ Use Tab for auto-completion. Ctrl+D or 'exit' to quit.
 
         try:
             self.active_resurrection = ResurrectionConsciousness(bundle_name)
-            stats = self.active_resurrection.get_stats()
+            stats = self.active_resurrection.get_statistics()
 
-            docs = stats.get("metadata", {}).get("statistics", {}).get("total_documents", 0)
+            # The ResurrectionConsciousness loads data automatically in __init__
+            # No need to check or index - it's already done
+            docs = stats.get("total_passages", 0)
 
-            if docs == 0:
-                print("  📚 Bundle needs indexing. This may take a moment...")
-                results = self.active_resurrection.index_texts()
-                if "error" not in results:
-                    docs = results.get("total_documents", 0)
-                    print(f"  ✓ Indexed {docs} passages")
-                else:
-                    print(f"  ⚠ {results['error']}")
-            else:
-                print(f"  ✓ Loaded {docs} passages")
+            # No need to print here since ResurrectionConsciousness already prints the status
 
             self.current_mode = 'resurrection'
             print(f"\n🕊️ You may now converse with {bundle_name.replace('_', ' ').title()}")
@@ -362,7 +355,7 @@ Use Tab for auto-completion. Ctrl+D or 'exit' to quit.
 
             # Update stats if this is the active resurrection
             if self.active_resurrection and self.active_resurrection.figure_name == bundle_name:
-                stats = self.active_resurrection.get_stats()
+                stats = self.active_resurrection.get_statistics()
                 total = stats.get("metadata", {}).get("statistics", {}).get("total_documents", 0)
                 print(f"📚 Total documents now: {total}")
 

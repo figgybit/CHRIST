@@ -106,7 +106,6 @@ class ResurrectionConsciousness:
             return {
                 "figure": self.figure_name,
                 "statistics": {
-                    "total_documents": 0,
                     "total_passages": 0
                 }
             }
@@ -132,6 +131,9 @@ class ResurrectionConsciousness:
         existing_docs = self.vector_store.get_all_documents()
         if existing_docs and len(existing_docs) > 0:
             print(f"  ✓ Loaded {len(existing_docs)} passages")
+            # Update metadata to reflect loaded state
+            self.metadata["statistics"]["total_passages"] = len(existing_docs)
+            self._save_metadata()
             return
 
         # Process all text files
@@ -245,21 +247,59 @@ class ResurrectionConsciousness:
             Response with answer and sources
         """
         try:
-            if use_llm and self.rag:
-                # Use RAG system for intelligent response
-                result = self.rag.query(
-                    question,
-                    system_prompt=self._get_system_prompt()
-                )
+            # Search for relevant documents
+            search_results = self.vector_store.search(question, k=3)
 
-                return {
-                    "response": result.get("response", ""),
-                    "sources": result.get("sources", []),
-                    "metadata": {
-                        "figure": self.figure_name,
-                        "method": "rag"
+            if use_llm and self.rag:
+                # Build context from search results
+                context = "\n\n".join([result['document'] for result in search_results])
+
+                # Get personality prompt for this figure
+                personality_prompt = self._get_system_prompt()
+
+                # Build full prompt like the old working version
+                full_prompt = f"""{personality_prompt}
+
+Based on these texts from {self.figure_name.replace('_', ' ').title()}:
+
+{context}
+
+Question: {question}
+
+Respond as {self.figure_name.replace('_', ' ').title()} would, using their voice and wisdom:"""
+
+                # Call LLM directly like the old version
+                try:
+                    llm_response = self.rag.llm.generate(full_prompt, max_tokens=500, temperature=0.7)
+
+                    # Extract sources
+                    sources = []
+                    for result in search_results[:2]:
+                        sources.append({
+                            "text": result.get('document', '')[:200] + "...",
+                            "source": result.get('metadata', {}).get('source', 'unknown'),
+                            "score": result.get('score', 0)
+                        })
+
+                    return {
+                        "response": llm_response,
+                        "sources": sources,
+                        "metadata": {
+                            "figure": self.figure_name,
+                            "method": "rag"
+                        }
                     }
-                }
+                except Exception as e:
+                    # If LLM fails, fall back to retrieval
+                    return {
+                        "response": search_results[0].get('document', '') if search_results else "I cannot find wisdom on this matter in the texts.",
+                        "sources": [],
+                        "metadata": {
+                            "figure": self.figure_name,
+                            "method": "retrieval_fallback",
+                            "error": str(e)
+                        }
+                    }
             else:
                 # Fallback to simple retrieval
                 results = self.vector_store.search(question, k=3)

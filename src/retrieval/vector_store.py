@@ -298,6 +298,56 @@ class VectorStore:
             'embedding_dimension': self.embedding_dimension
         }
 
+    def get_all_documents(self) -> List[Dict[str, Any]]:
+        """
+        Get all documents from the store.
+
+        Returns:
+            List of documents with their metadata
+        """
+        if self.collection is not None:
+            # Get all from ChromaDB
+            results = self.collection.get()
+            documents = []
+            if results and results.get('ids'):
+                for i in range(len(results['ids'])):
+                    doc = {
+                        'id': results['ids'][i],
+                        'text': results['documents'][i] if results.get('documents') else '',
+                        'metadata': results['metadatas'][i] if results.get('metadatas') else {}
+                    }
+                    documents.append(doc)
+            return documents
+        else:
+            # Get from memory store
+            documents = []
+            for i in range(len(self.memory_store['ids'])):
+                doc = {
+                    'id': self.memory_store['ids'][i],
+                    'text': self.memory_store['documents'][i],
+                    'metadata': self.memory_store['metadatas'][i]
+                }
+                documents.append(doc)
+            return documents
+
+    def delete_document(self, doc_id: str):
+        """
+        Delete a single document by ID.
+
+        Args:
+            doc_id: Document ID to delete
+        """
+        if self.collection is not None:
+            self.collection.delete(ids=[doc_id])
+        else:
+            # Delete from memory store
+            if doc_id in self.memory_store['ids']:
+                idx = self.memory_store['ids'].index(doc_id)
+                self.memory_store['ids'].pop(idx)
+                self.memory_store['embeddings'].pop(idx)
+                self.memory_store['documents'].pop(idx)
+                self.memory_store['metadatas'].pop(idx)
+
     def clear(self):
         """
         Clear all documents from the store.

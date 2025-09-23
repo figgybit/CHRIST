@@ -17,7 +17,8 @@
     "total_documents": 2818,
     "last_indexed": "2025-09-22T20:14:40.834850",
     "last_updated": "2025-09-22T23:47:46.693919",
-    "last_inbox_processing": "2025-09-22T23:47:46.693926"
+    "last_inbox_processing": "2025-09-22T23:47:46.693926",
+    "total_passages": 470
   },
   "inbox_history": [
     {

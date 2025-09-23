@@ -231,3 +231,5 @@ docker-compose.override.yml
 *.tar.gz
 *.rar
 *.7z
+# Test files
+test_*.py
