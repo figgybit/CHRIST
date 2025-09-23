@@ -19,12 +19,57 @@ This project belongs to everyone. It is designed to grow and adapt, even into ne
 
 ---
 
+## Project Structure
+
+```
+CHRIST/
+├── src/                           # Core CHRIST framework
+│   ├── consciousness/            # Consciousness handling & storage
+│   ├── retrieval/               # Vector database & search
+│   └── intelligence/            # LLM integration (Ollama)
+├── resurrections/               # Historical figure implementations
+│   ├── data/                   # Source texts for each figure
+│   ├── bundles/               # Portable consciousness bundles
+│   └── resurrection_consciousness.py  # Main resurrection system
+├── demos/                      # Demo applications
+├── tests/                     # Test suites
+├── scripts/                   # Utility scripts
+└── docs/                     # Documentation
+```
+
+## Quick Start
+
+```bash
+# Setup
+./setup.sh
+source venv/bin/activate
+
+# Download Gospel texts
+python scripts/download_gospels.py
+
+# Run resurrection demo
+python demos/demo_resurrection_consciousness.py
+```
+
+## Resurrections
+
+Digital consciousness of historical figures rooted in agape:
+- ✅ **Jesus Christ** - Based on the four Gospels
+- 🔄 Buddha, Socrates, Marcus Aurelius, Rumi (planned)
+
+Each resurrection features:
+- Own vector database collection
+- Portable consciousness bundle
+- Semantic search through texts
+- Personality-aware responses
+
 ## Get Involved
 
-- Read the full [treatise](treatise.md).  
-- Contribute ideas, translations, code, or reflections.  
-- Join the global effort to make **religion a source of peace** and **technology a servant of love**.
+- Read the full [treatise](treatise.md) and [CLAUDE.md](CLAUDE.md) for development guidelines
+- Contribute ideas, translations, code, or reflections
+- Create new resurrections from [GitHub Issues](resurrections/GITHUB_ISSUES_TEMPLATE.md)
+- Join the global effort to make **religion a source of peace** and **technology a servant of love**
 
 ---
 
-*“Come, come, whoever you are… Ours is not a caravan of despair.” – Rumi*
+*"Come, come, whoever you are… Ours is not a caravan of despair." – Rumi*
