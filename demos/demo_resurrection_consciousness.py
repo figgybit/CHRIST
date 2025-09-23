@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 
 # Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Ensure we're using venv
 if 'VIRTUAL_ENV' not in os.environ:
