@@ -108,7 +108,7 @@ Use Tab for auto-completion. Ctrl+D or 'exit' to quit.
             stats = self.vector_store.get_stats()
             print(f"\n📊 System Status:")
             print(f"  Documents: {stats['total_documents']}")
-            print(f"  Storage: {stats['store_type']}")
+            print(f"  Storage: {stats.get('storage_type', 'unknown')}")
             print(f"  AI: {'Connected' if self.rag else 'Not available'}")
 
         except Exception as e:

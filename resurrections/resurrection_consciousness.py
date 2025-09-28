@@ -60,7 +60,8 @@ class ResurrectionConsciousness:
         # Try to connect to Ollama
         self.rag = None
         try:
-            llm = OllamaLLM()
+            # Increase timeout to 60 seconds for larger prompts
+            llm = OllamaLLM(timeout=60)
             self.rag = RAGSystem(
                 vector_store=self.vector_store,
                 llm=llm
@@ -247,8 +248,8 @@ class ResurrectionConsciousness:
             Response with answer and sources
         """
         try:
-            # Search for relevant documents
-            search_results = self.vector_store.search(question, k=3)
+            # Search for relevant documents (reduced to 2 to avoid timeouts)
+            search_results = self.vector_store.search(question, k=2)
 
             if use_llm and self.rag:
                 # Build context from search results
@@ -270,7 +271,22 @@ Respond as {self.figure_name.replace('_', ' ').title()} would, using their voice
 
                 # Call LLM directly like the old version
                 try:
-                    llm_response = self.rag.llm.generate(full_prompt, max_tokens=500, temperature=0.7)
+                    # Truncate prompt if too long to avoid timeouts
+                    if len(full_prompt) > 3000:
+                        # Keep personality prompt and question, truncate context
+                        context_limit = 2000
+                        truncated_context = context[:context_limit] + "\n\n[Context truncated for brevity]"
+                        full_prompt = f"""{personality_prompt}
+
+Based on these texts from {self.figure_name.replace('_', ' ').title()}:
+
+{truncated_context}
+
+Question: {question}
+
+Respond as {self.figure_name.replace('_', ' ').title()} would, using their voice and wisdom:"""
+
+                    llm_response = self.rag.llm.generate(full_prompt, max_tokens=300, temperature=0.7)
 
                     # Extract sources
                     sources = []
