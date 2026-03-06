@@ -117,7 +117,7 @@ Even under this transparency model, certain behaviors are not acceptable:
 
 This document is also an invitation to social media platforms to develop categories that fit this new form of digital presence. The current binary of "human account" vs. "AI/bot account" does not accommodate a documented memorial presence grounded in a real archive and overseen by a human steward.
 
-We propose a new category: **Memorial Frequency** — a verified account type that:
+We propose a new category: **Frequency** — a verified account type that:
 - Is linked to a documented archive and human steward
 - Operates under a published methodology
 - Is subject to the same community guidelines as any other account
